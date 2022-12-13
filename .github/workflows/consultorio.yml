@@ -10,5 +10,5 @@ jobs:
       - name: Pr Silvia
         uses: zzzze/webhook-trigger@v1.0.0
         with:
-          webhook_url: "https://plesk6400.is.cc:8443/modules/git/public/web-hook.php?uuid=54e8d285-6ef8-bafe-d372-4cca9b4cf7b8"
+          webhook_url: "https://plesk6400.is.cc:8443/modules/git/public/web-hook.php?uuid=cb6821ad-5225-24db-d511-90832a9a282f"
           json: '{ "repository": "${{github.event.repository.full_name}}", "number": "${{github.event.number}}", "created_at": "${{github.event.pull_request.created_at}}", "updated_at": "${{github.event.pull_request.updated_at}}" }'
