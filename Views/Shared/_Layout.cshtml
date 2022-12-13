@@ -22,12 +22,12 @@
 
     <!-- Add to homescreen for Chrome on Android -->
     <meta name="mobile-web-app-capable" content="yes">
-    <meta name="application-name" content="SysIgreja">
+    <meta name="application-name" content="SysConsultorio">
     <link rel="icon" type="image/png" sizes="16x16" />
     <!-- Add to homescreen for Safari on iOS -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
-    <meta name="apple-mobile-web-app-title" content="SysIgreja">
+    <meta name="apple-mobile-web-app-title" content="SysConsultorio">
     <link rel="manifest" href="~/manifest.json" />
     <title></title>
 
@@ -214,7 +214,7 @@
 
                 getConfig($("*[id*='eventoid']").val())
             } else {
-                $('title').text("SysIgreja")
+                $('title').text("SysConsultorio")
                 $('link[rel="icon"]').attr('href', `data:image/png;base64,${logoLogin}`)
                 $('#home-button-logo img').attr('src', `data:image/png;base64,${logoLogin}`)
                 $('#home-button-logo').css('display', 'block')
