@@ -1,0 +1,406 @@
+﻿@using Microsoft.AspNet.Identity
+@using Utils.Constants;
+
+<!DOCTYPE html>
+<html>
+<head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-2CZ37FW7BZ"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+
+        gtag('config', 'G-2CZ37FW7BZ');
+    </script>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <!-- Chrome for Android theme color -->
+    <meta name="theme-color" content="#c20935">
+
+    <!-- Add to homescreen for Chrome on Android -->
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="application-name" content="SysIgreja">
+    <link rel="icon" type="image/png" sizes="16x16" />
+    <!-- Add to homescreen for Safari on iOS -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-title" content="SysIgreja">
+    <link rel="manifest" href="~/manifest.json" />
+    <title></title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;900&display=swap" rel="stylesheet">
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700' rel='stylesheet' type='text/css'>
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/av01d/fontpicker-jquery-plugin@1.5/dist/jquery.fontpicker.min.css" integrity="sha256-urFh3EMgi9s3j3w+TsAP1TfUQiE0yUZmmLX7JRyvjqE=" crossorigin="anonymous">
+    <!-- Add local styles, mostly for plugins css file -->
+    @if (IsSectionDefined("Styles"))
+    {@RenderSection("Styles", required: false)}
+
+
+
+    <style>
+        .password-click {
+            position: absolute;
+            top: 0;
+            right: 0;
+            z-index: 10;
+            border: none;
+            background: transparent;
+            outline: none;
+            padding-top: 6px;
+            padding-right: 20px;
+        }
+
+        .group-senha {
+            position: relative;
+        }
+
+            .group-senha input {
+                width: 100%;
+            }
+    </style>
+
+
+    <!-- Add jQuery Style direct - used for jQGrid plugin -->
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css" type="text/css" />
+
+    <!-- Primary Inspinia style -->
+    @Styles.Render("~/font-awesome/css")
+    @Styles.Render("~/Content/css")
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.12.1/css/jquery.dataTables.min.css" type="text/css" />
+    <link rel="stylesheet" href="https://cdn.datatables.net/fixedcolumns/4.1.0/css/fixedColumns.dataTables.min.css" type="text/css" />
+    <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.2.3/css/buttons.dataTables.min.css" type="text/css" />
+    <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.3.0/css/responsive.dataTables.min.css" type="text/css" />
+    <link rel="stylesheet" href="https://cdn.datatables.net/colreorder/1.5.6/css/colReorder.dataTables.min.css" type="text/css" />
+    <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.2.3/css/buttons.dataTables.min.css" type="text/css" />
+    @Styles.Render("~/plugins/sweetalert")
+    @Styles.Render("~/plugins/dataPickerStyles")
+    @Styles.Render("~/Content/plugins/iCheck/iCheckStyles")
+    @Styles.Render("~/Content/plugins/chosen/chosenStyles")
+    @Styles.Render("~/bundle/jasny")
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-material-datetimepicker/2.7.1/css/bootstrap-material-datetimepicker.css" integrity="sha512-n/Uz0nm+qm1KbAOnqYOg9OihX5n1gFz2a+VyHoMSHOK6AdMSpH5Sak6yVI/cx721pUJarnwDHMkljOQrFOirTg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/croppie/2.6.5/croppie.min.css" integrity="sha512-zxBiDORGDEAYDdKLuYU9X/JaJo/DPzE42UubfBw9yg8Qvb2YRRIQ8v4KsGHOx2H1/+sdSXyXxLXv5r7tHc9ygg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet"
+          href="https://unpkg.com/leaflet@1.1.0/dist/leaflet.css"
+          type="text/css" />
+</head>
+<body>
+
+    <!-- Wrapper-->
+    <!-- PageClass give you ability to specify custom style for specific view based on action -->
+    <div id="wrapper" class="@Html.PageClass()">
+        <span id="title" hidden>@ViewBag.Title</span>
+        <!-- Navigation -->
+        @Html.Partial("_Navigation")
+
+        <!-- Page wraper -->
+        <div id="page-wrapper" class="gray-bg @ViewBag.SpecialClass">
+
+            <!-- Top Navbar -->
+            @Html.Partial("_TopNavbar")
+
+            <!-- Main view  -->
+            @RenderBody()
+
+            <!-- Footer -->
+            @Html.Partial("_Footer")
+
+        </div>
+        <!-- End page wrapper-->
+
+
+    </div>
+    <!-- End wrapper-->
+    <!-- Section for main scripts render -->
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap")
+    @Scripts.Render("~/bundles/imaskjs")
+    @Scripts.Render("~/plugins/slimScroll")
+    @Scripts.Render("~/bundles/inspinia")
+    @Scripts.Render("~/bundles/util")
+    @Scripts.Render("~/plugins/iCheck")
+    @Scripts.Render("~/bundles/moment")
+    @Scripts.Render("~/bundles/sweetalert")
+    @Scripts.Render("~/plugins/dataPicker")
+    @Scripts.Render("~/plugins/chosen")
+    @Scripts.Render("~/plugins/jasny")
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" integrity="sha512-BNaRQnYJYiPSqHHDb58B0yaPfCu+Wgds8Gp/gU33kqBtgNS4tSPHuGibyoeqMV/TJlSKda6FXzoEyYGjTe+vXA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script src="https://unpkg.com/leaflet@1.1.0/dist/leaflet.js"></script>
+    <script src="~/Scripts/app/Util/mapa.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/av01d/fontpicker-jquery-plugin@1.5/dist/jquery.fontpicker.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/compressorjs/1.1.1/compressor.min.js" integrity="sha512-VaRptAfSxXFAv+vx33XixtIVT9A/9unb1Q8fp63y1ljF+Sbka+eMJWoDAArdm7jOYuLQHVx5v60TQ+t3EA8weA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/croppie/2.6.5/croppie.min.js" integrity="sha512-Gs+PsXsGkmr+15rqObPJbenQ2wB3qYvTHuJO6YJzPe/dTLvhy0fmae2BcnaozxDo5iaF8emzmCZWbQ1XXiX2Ig==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-material-datetimepicker/2.7.1/js/bootstrap-material-datetimepicker.min.js" integrity="sha512-LRkOtikKE2LFHPWiWh0/bfFynswxRwCZ5O7PkXTVFPcprw376xfOemiEHEOmCCmiwS6eLFUh2fb+Gqxc0waTSg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.9.2/umd/popper.min.js" integrity="sha512-2rNj2KJ+D8s1ceNasTIex6z4HWyOnEYLVC3FigGOmyQCZc2eBXKgOxQmo3oKLHyfcj53uz4QMsRCWNbLd32Q1g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://unpkg.com/tippy.js@6/dist/tippy-bundle.umd.js"></script>
+    <script src="https://cdn.datatables.net/1.12.1/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/responsive/2.3.0/js/dataTables.responsive.min.js"></script>
+    <script src="https://cdn.datatables.net/fixedcolumns/4.1.0/js/dataTables.fixedColumns.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.2.3/js/dataTables.buttons.min.js"></script>
+    <script src="~/Scripts/plugins/dataTables/datatable-default-config.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.2.3/js/buttons.colVis.min.js"></script>
+    <script src="https://cdn.datatables.net/colreorder/1.5.6/js/dataTables.colReorder.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.2.3/js/buttons.html5.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.2.3/js/buttons.print.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/locales-all.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.21/lodash.min.js" integrity="sha512-WFN04846sdKMIP5LKNphMaWzU7YpMyCU245etK3g/2ARYbPK9Ub18eG+ljU96qKRCWh+quCY7yefSmlkQw1ANQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+
+    <script>
+        const { jsPDF } = window.jspdf;
+        let globalEventoId
+        let globalConfigId
+        var config = {}
+        var campos = []
+        let isAdm = @User.IsInRole(Usuario.Admin).ToString().ToLower();
+        let logoRelatorio;
+        let logoLogin;
+        $.fn.modal.Constructor.prototype.enforceFocus = function () { };
+        $.fn.modal.Constructor.prototype._enforceFocus = function () { };
+
+        $("*[id*='eventoid']").change(function () {
+            getConfig(this.value)
+            if (this.value != 999) {
+                localStorage.setItem('eventoId', this.value)
+            }
+
+        })
+
+        $("*[id*='configId']").change(function () {
+            console.log(this.value);
+            localStorage.setItem('configId', this.value)
+        })
+
+        $(document).ready(function () {
+            loadAvatar()
+            if (!window.location.href.includes('Coordenador')) {
+                globalEventoId = localStorage.getItem('eventoId')
+                globalConfigId = localStorage.getItem('configId')
+                if (globalConfigId != null) {
+                    $("*[id*='configId']").val(globalConfigId)
+                }
+                if (globalEventoId != 999 && globalEventoId != null) {
+
+                    $("*[id*='eventoid']").val(globalEventoId).trigger("chosen:updated");
+
+                }
+            }
+
+            $.ajax({
+                url: "/Configuracao/GetLogin/",
+                datatype: "json",
+                type: "GET",
+                contentType: 'application/json; charset=utf-8',
+                success: function (data) {
+                    var login = data.Login
+                    logoLogin = login.Logo
+            if ($("*[id*='eventoid']").val()) {
+
+                getConfig($("*[id*='eventoid']").val())
+            } else {
+                $('title').text("SysIgreja")
+                $('link[rel="icon"]').attr('href', `data:image/png;base64,${logoLogin}`)
+                $('#home-button-logo img').attr('src', `data:image/png;base64,${logoLogin}`)
+                $('#home-button-logo').css('display', 'block')
+            }
+                }
+            })
+        })
+
+
+        function getConfig(id) {
+            if (id != 999) {
+
+
+                $.ajax({
+                    url: "/Evento/GetValorEvento/",
+                    data: { Id: id },
+                    datatype: "json",
+                    type: "GET",
+                    contentType: 'application/json; charset=utf-8',
+                    success: function (data) {
+                        $('#pagamentos-valor').data('valor-realista',data)
+                    }
+                })
+
+                $.ajax({
+                    url: "/Evento/GetTaxaEvento/",
+                    data: { Id: id },
+                    datatype: "json",
+                    type: "GET",
+                    contentType: 'application/json; charset=utf-8',
+                    success: function (data) {
+                        $('#pagamentos-valor').data('valor-equipante', data)
+                    }
+                })
+
+
+
+                $.ajax({
+                    url: "/Configuracao/GetConfiguracaoByEventoId/",
+                    data: { Id: id },
+                    datatype: "json",
+                    type: "GET",
+                    contentType: 'application/json; charset=utf-8',
+                    success: function (data) {
+                        config = data.Configuracao
+                        globalConfigId = config.Id
+                        $('title').text(`${config.Titulo} | ${$('#title').text()}`)
+
+                        if (config.TipoCirculo == 'Endereco') {
+                            $('#ibox-mapa-circulo').css('display', 'block')
+                        } else {
+                            $('#ibox-mapa-circulo').css('display', 'none')
+                        }
+
+                        $('.title-circulo').text(config.EquipeCirculo)
+                        if (config.LogoId) {
+                            $('link[rel="icon"]').attr('href', `data:image/png;base64,${config.Logo}`)
+                            $('#home-button-logo img').attr('src', `data:image/png;base64,${config.Logo}`)
+
+                            $('body').on('DOMNodeInserted', '.swal-icon--custom', function () {
+
+                                $('.swal-icon--custom').replaceWith(`<img style="max-width: 60%;
+    max-height: 150px;
+    padding: 15px;" src="data:image/png;base64,${config.LogoRelatorio}">`)
+                            });
+                        }
+                        $('#home-button-logo').css('display', 'block')
+                        if (config.LogoRelatorioId) {
+                            logoRelatorio = config.LogoRelatorio
+                        }
+
+                        if (config.MeioPagamentos.length > 0) {
+                            $("[id$='meiopagamento']").html(`${config.MeioPagamentos.map(mp => `<option value=${mp.Id}>${mp.Descricao}</option>`)}`)
+                            $("#busca-meiopagamento").html(`<option value="0">Selecione</option>${config.MeioPagamentos.map(mp => `<option value=${mp.Id}>${mp.Descricao}</option>`)}`)
+
+                        }
+                        if (config.Etiquetas.length > 0) {
+                            $("[id$='-etiquetas']").html(`${config.Etiquetas.map(etiqueta => `<option data-cor="${etiqueta.Cor}" value=${etiqueta.Id}>${etiqueta.Nome}</option>`)}`)
+                        }
+                        if (config.CentroCustos.length > 0) {
+                            $("[id$='-centrocusto']").html(`${config.CentroCustos.map(centCusto => `<option class="opt-centrocusto" data-tipo=${centCusto.Tipo} value="${centCusto.Id}">${centCusto.Descricao}</option>`)}`)
+
+                            $("#busca-centrocusto").html(`<option value="0">Selecione</option>${config.CentroCustos.map(centCusto => `<option class="opt-centrocusto" data-tipo=${centCusto.Tipo} value="${centCusto.Id}">${centCusto.Descricao}</option>`)}`)
+
+                        }
+
+                        if ($("#busca-centrocusto").length > 0 && $("#busca-meiopagamento").length > 0) {
+                            Filtrar()
+                        }
+                    }
+                });
+            }
+        }
+
+
+        let div = document.createElement("div");
+        div.innerHTML = ` <div class="group-senha">
+                                <input type="password" class="form-control required text-lowercase" id="usuario-senha" data-field="Senha" data-min-length="6" />
+                                <button class="password-click" onmousedown='$("#usuario-senha").attr("type", "text");' onmouseup='$("#usuario-senha").attr("type", "password");' type="submit">
+                                    <i class="fa fa-eye"></i>
+                                </button>
+                            </div>`
+
+        function changePass() {
+            CustomSwal({
+                title: "Mudança de senha",
+                icon: "info",
+                text: "Digite a nova senha",
+                content: div,
+                className: "button-center",
+                buttons: ["Cancelar", "Confirmar"]
+            }).then(result => {
+                if (!$('#usuario-senha').val() || $('#usuario-senha').val().length < 6) {
+                    ErrorMessage("A senha deve ter no mínimo 6 caracteres")
+                } else {
+                    $.ajax({
+                        url: "/Account/ChangePass/",
+                        datatype: "json",
+                        type: "POST",
+                        contentType: 'application/json; charset=utf-8',
+                        data: JSON.stringify(
+                            {
+                                senha: $('#usuario-senha').val()
+                            }),
+                        success: function () {
+                            SuccessMesageOperation();
+                        }
+                    });
+
+                }
+
+            })
+        }
+
+        $("#user-avatar-arquivo").change(function () {
+            PostAvarUser();
+        });
+
+        function loadAvatar() {
+            $.ajax(
+                {
+                    type: "GET",
+                    url: "/Account/GetAvatar",
+                    success: function (data) {
+                        if (data) {
+                            $('.img-avatar').attr('src', `data:image/png;base64,${data}`)
+                        }
+                    },
+                    error: function () {
+                        $('.img-avatar').attr('src', "../Images/profile.jpg")
+
+                    }
+                });
+        }
+
+        function PostAvarUser() {
+
+            var dataToPost = new FormData($('#frm-upload-avatar')[0]);
+            dataToPost.set('Arquivo', dataToPost.get('user-avatar-arquivo'))
+
+            $.ajax(
+                {
+                    processData: false,
+                    contentType: false,
+                    type: "POST",
+                    data: dataToPost,
+                    url: "/Arquivo/PostArquivo",
+                    success: function (data) {
+                        $.ajax(
+                            {
+                                datatype: "json",
+                                type: "POST",
+                                contentType: `application/json; charset=utf-8`,
+                                url: `/Account/setAvatar`,
+                                data: `{  arquivoId: ${data} }`,
+                                success: function () {
+                                    SuccessMesageOperation()
+                                    loadAvatar()
+                                }
+                            });
+                    }
+                });
+        }
+
+    </script>
+    <!-- Handler for local scripts -->
+    @RenderSection("scripts", required: false)
+</body>
+</html>

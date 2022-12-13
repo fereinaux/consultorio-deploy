@@ -1,0 +1,155 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-2CZ37FW7BZ"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+
+        gtag('config', 'G-2CZ37FW7BZ');
+    </script>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Configuracao.Titulo | @ViewBag.Title</title>
+
+    <link href="~/Fonts/font-awesome/css/all.css" rel="stylesheet">
+    <link rel="stylesheet"
+          href="https://unpkg.com/leaflet@1.1.0/dist/leaflet.css"
+          type="text/css" />
+    @if (ViewBag.Configuracao.LogoId != null)
+    {
+
+        <link rel="icon" type="image/png" sizes="16x16" href="data:image/png;base64,@ViewBag.Configuracao.Logo" />
+    }
+    <link href="~/Content/animate.css" rel="stylesheet">
+    <link href="~/Content/style.css" rel="stylesheet">
+    <link href="~/Content/evento.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="~/assets/css/main.css" />
+    <link href="~/Content/plugins/sweetalert/sweetalert.css" rel="stylesheet">
+    <link href="~/Content/plugins/iCheck/custom.css" rel="stylesheet">
+    <link href="~/Content/plugins/datapicker/datepicker3.css" rel="stylesheet">
+    <link href="~/Content/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-material-datetimepicker/2.7.1/css/bootstrap-material-datetimepicker.css" integrity="sha512-n/Uz0nm+qm1KbAOnqYOg9OihX5n1gFz2a+VyHoMSHOK6AdMSpH5Sak6yVI/cx721pUJarnwDHMkljOQrFOirTg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        .header-evento {
+            height: 70px;
+        }
+
+        ::-webkit-scrollbar-thumb { background: @ViewBag.Configuracao.CorBotao;}  ::-webkit-scrollbar-thumb:hover { background: @ViewBag.Configuracao.CorHoverBotao;}
+
+
+        body {
+            font-family: "Roboto" !important;
+        }
+
+        @@media (max-width: 768px) {
+            ::-webkit-scrollbar {
+                width: 0px;
+                height: 0px;
+            }
+
+            ::-webkit-scrollbar-track {
+                background: transparent;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="row justify-content-center header-evento" style="display:flex">
+        <div class="col-header" style="margin: auto;padding:5px; display: flex">
+            <span onclick="window.location.href = 'https://iecbeventos.com.br'" style="margin-left: 20px; cursor: pointer; margin-right: auto; margin-top: auto; margin-bottom: auto; font-size: 20px; color: white"><i class="fas fa-chevron-left"></i></span>
+            <img style="height: 50px; margin: auto; margin-left: -40px;" alt="@ViewBag.Configuracao.Titulo" src="data:image/png;base64,@ViewBag.Configuracao.Logo" />
+        </div>
+
+    </div>
+    <div class="row justify-content-center" style="display:flex">
+
+        @RenderBody()
+    </div>
+
+    <div id="preloader">
+        <div class="loader" id="loader-1"></div>
+    </div>
+</body>
+</html>
+
+<script src="~/Scripts/jquery-3.1.1.min.js"></script>
+<script src="~/Scripts/plugins/imaskjs/imask.js"></script>
+<script src="~/Scripts/app/Util/extensions.js"></script>
+<script src="~/Scripts/app/Util/forms.js"></script>
+<script src="~/Scripts/app/Util/inputs.js"></script>
+<script src="~/Scripts/app/Util/messages.js"></script>
+<script src="~/Scripts/plugins/sweetalert/sweetalert.min.js"></script>
+<script src="~/Scripts/plugins/iCheck/icheck.min.js"></script>
+<script src="~/Scripts/plugins/moment/moment-with-locales.min.js"></script>
+<script src="~/Scripts/plugins/datapicker/bootstrap-datepicker.js"></script>
+<script src="~/Scripts/plugins/chosen/chosen.jquery.js"></script>
+<script src="https://unpkg.com/leaflet@1.1.0/dist/leaflet.js"></script>
+<script src="~/Scripts/app/Util/mapa.js"></script>
+<script src="https://malsup.github.io/jquery.blockUI.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-material-datetimepicker/2.7.1/js/bootstrap-material-datetimepicker.min.js" integrity="sha512-LRkOtikKE2LFHPWiWh0/bfFynswxRwCZ5O7PkXTVFPcprw376xfOemiEHEOmCCmiwS6eLFUh2fb+Gqxc0waTSg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://sdk.mercadopago.com/js/v2"></script>
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/locales-all.min.js"></script>
+
+@*<script>
+        const mp = new MercadoPago('APP_USR-4fba577e-117d-4ac4-ad7a-499a782b5268', {
+            locale: 'pt-BR'
+        });
+
+        mp.checkout({
+            preference: {
+                id: '221658192-b2623248-636a-44d3-a565-85c96706b5c4'
+            },
+            render: {
+                container: '.cho-container',
+                label: 'Pagar',
+            }
+        });
+    </script>*@
+
+<script>
+        $(window).on('load', function () {
+            var logo = "@ViewBag.Configuracao.LogoRelatorio"
+
+            $('body').on('DOMNodeInserted', '.swal-icon--custom', function () {
+                $('.swal-icon--custom').replaceWith(`<img style="max-width: 60%;
+    max-height: 150px;
+    padding: 15px;" src="data:image/png;base64,${logo}">`)
+            });
+            $('#preloader').fadeOut();
+        })
+
+    let corBotao = '@ViewBag.Configuracao.CorBotao'
+    document.styleSheets[0].addRule('#loader-1:before,#loader-1:after ', `border-top-color: @ViewBag.Configuracao.CorBotao !important;`);
+    $(document).ready(function () {
+
+            @if (ViewBag.Configuracao.BackgroundId != null)
+            {
+                <text> $('.background-evento').css('background', `url(data:image/jpeg;base64,@ViewBag.Configuracao.Background) no-repeat center center fixed`) </text>
+                <text> $('.background-evento').css('background-size', 'cover')</text>
+            }
+
+
+        $('.header-evento').css('background-color', '@ViewBag.Configuracao.CorBotao')
+        $('.icon-check-evento').css('background-color', '@ViewBag.Configuracao.CorBotao')
+        $('.btn-juventude').css('background-color', '@ViewBag.Configuracao.CorBotao')
+        $('.btn-juventude').css('border-color', '@ViewBag.Configuracao.CorBotao')
+
+        $('.btn-juventude').hover(function() {
+            $(this).css('background-color', '@ViewBag.Configuracao.CorHoverBotao')
+            $(this).css('border-color', '@ViewBag.Configuracao.CorHoverBotao')
+        }, function() {
+            $(this).css('background-color', '@ViewBag.Configuracao.CorBotao')
+            $(this).css('border-color', '@ViewBag.Configuracao.CorBotao')
+        })
+    })
+</script>
+
+@RenderSection("scripts", required: false)

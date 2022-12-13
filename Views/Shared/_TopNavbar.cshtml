@@ -1,0 +1,340 @@
+﻿@using Microsoft.AspNet.Identity
+@using Utils.Services
+
+<style>
+    .menu-user {
+        position: relative;
+        display: inline-block;
+        padding: 10px;
+    }
+
+    .menu-notification {
+        position: relative;
+        display: inline-block;
+    }
+
+    .img-avatar:hover {
+        opacity: 0.7
+    }
+
+    .dropdown-content {
+        display: none;
+        position: absolute;
+        top: 60px;
+        right: -10px;
+        background-color: #f9f9f9;
+        min-width: 200px;
+        box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+        z-index: 1;
+    }
+
+        .dropdown-content ul li.hover-menu {
+            width: 100%;
+            height: 50px;
+        }
+
+            .dropdown-content ul li.hover-menu:hover {
+                background-color: #d3d4d5;
+            }
+
+        .dropdown-content ul li.hover-menu-notification {
+            width: 100%;
+            height: 50px;
+        }
+
+    .hover-menu-notification, .hover-menu {
+        background: #e4e6e9;
+    }
+
+    .dropdown-content ul li.hover-menu-notification:hover {
+        background-color: #d3d4d5;
+    }
+
+    .menu-notification {
+        font-size: 20px;
+        padding: 20px 10px;
+    }
+
+    .navbar-right {
+        display: flex;
+    }
+
+    .text-muted {
+        color: #888888 !important;
+        font-size: 10px !important;
+    }
+
+    .dropdown-item {
+        color: #000000 !important;
+        font-size: 11px !important;
+    }
+
+    .item-notificacao {
+        border-bottom: 1px solid #bdbbbb;
+    }
+
+    .label-notificacao {
+        font-size: 10px;
+        font-family: 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+        font-weight: 600;
+        text-shadow: none;
+        border-radius: 0.25em;
+        white-space: nowrap;
+        line-height: 12px;
+        padding: 2px 5px;
+        position: absolute;
+        right: 6px;
+        top: 12px;
+    }
+
+        .label-notificacao.label-primary {
+            background-color: #1ab394;
+            color: #FFFFFF;
+        }
+
+    .dropdown-toggle {
+        white-space: nowrap;
+    }
+
+    @@media (max-width: 500px) {
+        .menu-user {
+            margin-right: 15px !important;
+        }
+    }
+</style>
+
+<div class="row border-bottom">
+    <nav class="navbar navbar-static-top white-bg" role="navigation" style="margin-bottom: 0">
+        <div class="navbar-header">
+            <a class="navbar-minimalize minimalize-styl-2 btn btn-primary " href="#"><i class="fa fa-bars"></i> </a>
+
+        </div>
+
+        @if (Request.IsAuthenticated)
+        {
+            using (Html.BeginForm("LogOff", "Account", FormMethod.Post, new { id = "frm-upload-avatar", @class = "navbar-right" }))
+            {
+                @Html.AntiForgeryToken()
+
+                <ul class="navbar-right" style="margin-left: auto">
+
+                    @*<li class="menu-notification" style="margin-right: 5px; display: flex; height: 50px">
+                        <a class="dropdown-toggle count-info" href="#">
+                            <span class="label label-primary label-notificacao" id="contador-notificacoes" style="cursor: pointer; display: none">3</span>
+                        </a>
+                        <i class="fa fa-bell" style="cursor: pointer"></i>
+
+                        <div class="dropdown-content">
+                            <ul class="nav navbar-top-links" id="panel-notificao">
+                                <li class="hover-menu">
+                                    <a href="/Notificacao" class="dropdown-item">
+                                        <div>
+                                            <strong>Todas as notificações</strong>
+                                            <i class="fa fa-angle-right"></i>
+                                        </div>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </li>*@
+
+                    <li class="menu-user" style="margin-right: 40px; display: flex;height:50px">
+                        <img class="img-avatar inputFile" style="margin: auto; width: 40px; height: 40px; border-radius: 50%; margin-left: 10px; cursor: pointer " src="~/Images/profile.jpg" />
+                        <div class="dropdown-content">
+                            <ul class="nav navbar-top-links">
+
+                                <li class="hover-menu">
+                                    <a href="#" style="color: #000000;">
+
+                                        @UtilServices.CapitalizarNome(User.Identity.GetUserName())
+
+                                    </a>
+                                </li>
+                                <li class="hover-menu">
+                                    <a href="#">
+                                        <label for="user-avatar-arquivo" style="cursor: pointer;width: 100%; color: #000000; font-weight: 600 !important; margin-bottom: 0px; font-size: 12px " class="inputFile">
+                                            Mudar Foto
+                                            <i style="float: right; padding-right: 5px" class="fas fa-camera"></i>
+                                            <input style="display: none;" class="custom-file-input inputFile" id="user-avatar-arquivo" name="user-avatar-arquivo" type="file" value="">
+                                        </label>
+                                    </a>
+                                </li>
+                                <li class="hover-menu">
+                                    <a href="#" onclick="changePass()">
+                                        <label for="user-password" style="cursor: pointer;width: 100%; color: #000000; font-weight: 600 !important; margin-bottom: 0px; font-size: 12px ">
+                                            Trocar Senha
+                                            <i style="float: right; padding-right: 5px" class="fas fa-key"></i>
+                                        </label>
+                                    </a>
+                                </li>
+                                <li class="hover-menu">
+                                    <a href="javascript:logoff()">
+                                        <label for="user-logout" style="cursor: pointer;width: 100%; color: #000000; font-weight: 600 !important; margin-bottom: 0px; font-size: 12px ">
+                                            Sair
+                                            <i style="float:right; padding-right: 5px" class="fas fa-sign-out-alt"></i>
+                                        </label>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </li>
+                </ul>
+            }
+        }
+    </nav>
+</div>
+
+<script>
+    const divBase = (tipo, quantidade,valor) => {
+        const { titulo, link, icon, onClick } = handleTipo(tipo, quantidade, valor);
+        return `
+        <li class="hover-menu-notification item-notificacao">
+            <a ${link ? `href="${link}"` : `onclick="${onClick}"` }  class="dropdown-item">
+                <div>
+                   ${icon}
+                   ${titulo}
+                </div>
+            </a>
+        </li>
+        `
+    }
+
+    function logoff() {
+        localStorage.removeItem('UserName')
+        localStorage.removeItem('Password')
+        document.getElementById('frm-upload-avatar').submit()
+    }
+
+    function pagarSistema(id,valor) {
+        let input = document.createElement("input");
+        input.type = 'number';
+        input.value = valor;
+        input.className = 'swal-content__input';
+        CustomSwal({
+            title: "Oferta do Sistema",
+            text: "Quanto você deseja ofertar?",
+            icon: "info",
+            content: input,
+            button: {
+                text: "Ofertar"
+            },
+            className: "button-center",
+          
+        }).then(result => {            
+            if (result)
+                ofertar(id, input.value)
+       
+        })
+    }
+
+    const handleTipo = (tipo, quantidade, valor) => {
+        switch (tipo) {
+            case "Inscrição":
+                return {
+                    titulo: `${quantidade} ${quantidade > 1 ? "novas inscrições" : "nova inscrição"}`,
+                    link: "/Participante",
+                    icon: '<i class="fas fa-user-plus"></i>'
+                }
+            default:
+                return {
+                    titulo: `Oferta do ${tipo}`,
+                    onClick: `pagarSistema(${quantidade},${valor})`,
+                    icon: '<i class="fas fa-money-bill-alt"></i>'
+                }      
+        }
+    }
+
+    window.onload = function () {
+        consultarNotificacoes()
+        setInterval(consultarNotificacoes, 60000)
+
+        $('.menu-user, .menu-notification').on('click', (event) => {
+            $(event.target).parent().find('.dropdown-content').css('display', 'block')
+            if ($(event.target).parent().hasClass('menu-notification')) {
+                $('.fa-bell').css("color", "#1c84c6")
+                $.ajax({
+                    url: "/Notificacao/SetNotificacoesLidas/",
+                    datatype: "json",
+                    type: "POST",
+                    contentType: 'application/json; charset=utf-8',
+                    success: function () {
+                        $('#contador-notificacoes').css('display', 'none')
+                    }
+                });
+            } else {
+                $('.img-avatar ').css('opacity',0.7)
+            }
+        })
+
+        window.onclick = (event) => {
+            if ($(event.target).parents('.dropdown-content').length == 0 && $(event.target).parent('.menu-user, .menu-notification').length == 0) {
+                $('.dropdown-content').css('display', 'none')
+                $('.img-avatar ').css('opacity', 1)
+                $('.fa-bell').css("color", "#676a6c")
+            } else if ($('.menu-user .dropdown-content').css('display') == 'block' && $(event.target).parent('.menu-notification').length > 0) {
+                $('.menu-user .dropdown-content').css('display', 'none')
+                $('.img-avatar ').css('opacity', 1)
+            } else if ($('.menu-notification .dropdown-content').css('display') == 'block' && $(event.target).parent('.menu-user').length > 0) {
+                $('.menu-notification .dropdown-content').css('display', 'none')
+                $('.fa-bell').css("color", "#676a6c")
+            }
+        }
+    };
+
+    const consultarNotificacoes = () => {
+        $.ajax({
+            url: "/Notificacao/GetNotificacoesNaoLidas/",
+            datatype: "json",
+            type: "GET",
+            contentType: 'application/json; charset=utf-8',
+            success: function (data) {
+                const { Notificacoes, Eventos } = data
+
+                const qtdNofitificacoes = Notificacoes.length + Eventos.length;
+
+                $('#contador-notificacoes').text(qtdNofitificacoes);
+
+                $('#contador-notificacoes').css('display', qtdNofitificacoes > 0 ? 'block' : 'none')
+
+                $('.item-notificacao').remove()
+
+                Notificacoes.forEach(notificacao => {
+                    $('#panel-notificao').prepend(divBase(notificacao.Titulo, notificacao.Quantidade))
+                })
+
+                Eventos.forEach(evento => {
+                    $('#panel-notificao').prepend(divBase(evento.Evento, evento.Id, evento.Valor))
+                })
+            }
+        })
+
+
+    }
+
+    function ofertar(id, valor) {
+
+
+        $.ajax({
+            url: "/Evento/OfertaEvento/",
+            datatype: "json",
+            type: "POST",
+            contentType: 'application/json; charset=utf-8',
+            data: JSON.stringify(
+                { Id: id, Valor: valor }),
+            success: (data) => {
+                consultarNotificacoes()
+
+                let div = document.createElement("div");
+
+                $(div).html(`<h4>Informações para transferência</h4><p>PIX CPF: <strong>100.778.704-09</strong> - Felipe Reinaux </p><p>Enviar comprovante para <strong>(81)9.9718-7441</strong></p>`)
+                swal({
+                    className: "button-center",
+                    title: "Oferta Computada",
+                    icon: "success",
+                    content: div 
+                });
+            }
+        });
+    }
+
+</script>
