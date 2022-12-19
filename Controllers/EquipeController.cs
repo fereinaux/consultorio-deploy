@@ -86,17 +86,6 @@ namespace SysIgreja.Controllers
             return new HttpStatusCodeResult(200);
         }
 
-        [HttpGet]
-        public ActionResult GetReunioes(int EventoId)
-        {
-            var result = reunioesBusiness.GetReunioes(EventoId)
-                .ToList()
-                .OrderBy(x => DateTime.Now.AddHours(4).Subtract(x.DataReuniao).TotalDays < 0 ? DateTime.Now.AddHours(4).Subtract(x.DataReuniao).TotalDays * -1 : DateTime.Now.AddHours(4).Subtract(x.DataReuniao).TotalDays)
-                .Select(x => new ReuniaoViewModel { DataReuniao = x.DataReuniao, Id = x.Id });
-
-            return Json(new { Reunioes = result }, JsonRequestBehavior.AllowGet);
-        }
-
         [HttpPost]
         public ActionResult GetEquipes(int EventoId)
         {

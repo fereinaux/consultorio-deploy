@@ -270,7 +270,6 @@ namespace SysIgreja.Controllers
 
             var result = participantesBusiness
             .GetParticipantesByEvento(EventoId)
-            .Where(x => x.Status == StatusEnum.Confirmado || x.Status == StatusEnum.Inscrito)
             .Select(x => new
             {
                 x.Nome,

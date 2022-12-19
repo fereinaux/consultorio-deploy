@@ -88,14 +88,8 @@ namespace SysIgreja.Controllers
             var result = new
             {
 
-                Evento = evento.Status.GetDescription(),
-                EventoOferta = evento.EventoLotes.Any() && evento.EventoLotes.OrderByDescending(x => x.Valor).FirstOrDefault().Valor > evento.Valor ?
-                evento.EventoLotes.OrderByDescending(x => x.Valor).FirstOrDefault().Valor :
-                evento.Valor,
-                Confirmados = participantesBusiness.GetParticipantesByEvento(EventoId).Where(x => x.Status == StatusEnum.Confirmado).Count(),
-                Cancelados = participantesBusiness.GetParticipantesByEvento(EventoId).Where(x => x.Status == StatusEnum.Cancelado).Count(),
-                Espera = participantesBusiness.GetParticipantesByEvento(EventoId).Where(x => x.Status == StatusEnum.Espera).Count(),
-                Presentes = participantesBusiness.GetParticipantesByEvento(EventoId).Where(x => x.Checkin).Count(),
+                Evento = evento.Status.GetDescription(),               
+              
                 Total = participantesBusiness.GetParticipantesByEvento(EventoId).Where(x => x.Status != StatusEnum.Cancelado && x.Status != StatusEnum.Espera).Count(),
                 Meninos = participantesBusiness.GetParticipantesByEvento(EventoId).Where(x => x.Sexo == SexoEnum.Masculino && x.Status != StatusEnum.Cancelado && x.Status != StatusEnum.Espera).Count(),
                 Meninas = participantesBusiness.GetParticipantesByEvento(EventoId).Where(x => x.Sexo == SexoEnum.Feminino && x.Status != StatusEnum.Cancelado && x.Status != StatusEnum.Espera).Count(),
@@ -124,29 +118,13 @@ namespace SysIgreja.Controllers
                     Valor = x.Valor
                 })
                 .OrderByDescending(x => x.Tipo),
-                InscritosHora = participantesBusiness.GetParticipantesByEvento(EventoId).Where(x => x.DataCadastro.HasValue).GroupBy(x => x.DataCadastro.Value.Hour).Select(x => new { Hora = x.Key, Qtd = x.Count() }).OrderBy(x => x.Hora).ToList(),
                 UltimosInscritos = participantesBusiness.GetParticipantesByEvento(EventoId).Where(x => x.Status != StatusEnum.Cancelado)
                 .OrderByDescending(x => x.DataCadastro).Take(5).ToList().Select(x => new ParticipanteViewModel
                 {
                     Nome = UtilServices.CapitalizarNome(x.Nome),
                     Sexo = x.Sexo.GetDescription(),
                     Idade = UtilServices.GetAge(x.DataNascimento)
-                }).ToList(),
-                EquipeMeninos = equipesBusiness.GetEquipantesEvento(EventoId).Where(x => x.Equipante.Sexo == SexoEnum.Masculino).Count(),
-                EquipeMeninas = equipesBusiness.GetEquipantesEvento(EventoId).Where(x => x.Equipante.Sexo == SexoEnum.Feminino).Count(),
-                Equipes = equipesBusiness.GetEquipes(EventoId).ToList().Select(x => new ListaEquipesViewModel
-                {
-                    Id = x.Id,
-                    Equipe = x.Nome,
-                    QuantidadeMembros = equipesBusiness.GetMembrosEquipe(EventoId, x.Id).Count()
-                }).ToList(),
-                Reunioes = reunioesBusiness.GetReunioes(EventoId).ToList().Select(x => new ReuniaoViewModel
-                {
-                    Id = x.Id,
-                    DataReuniao = x.DataReuniao,
-                    Titulo = x.Titulo,
-                    Presenca = x.Presenca.Count()
-                }).OrderBy(x => x.DataReuniao).ToList()
+                }).ToList(),                
             };
 
             return Json(new
@@ -198,11 +176,7 @@ namespace SysIgreja.Controllers
                 equipanteEvento.Evento.ConfiguracaoId.Value,
                     Cor = equipanteEvento.Evento.Configuracao.CorBotao,
                     Logo = equipanteEvento.Evento.Configuracao.Logo != null ? Convert.ToBase64String(equipanteEvento.Evento.Configuracao.Logo.Conteudo) : ""
-                },
-                Reunioes = reunioesBusiness.GetReunioes(eventoId)
-                .ToList()
-                .OrderBy(x => DateTime.Now.AddHours(4).Subtract(x.DataReuniao).TotalDays < 0 ? DateTime.Now.AddHours(4).Subtract(x.DataReuniao).TotalDays * -1 : DateTime.Now.AddHours(4).Subtract(x.DataReuniao).TotalDays)
-                .Select(x => new { DataReuniao = x.DataReuniao.ToString("dd/MM/yyyy"), Id = x.Id }),
+                },              
                 Membros = membrosEquipe.ToList().Select(x => new EquipanteViewModel
                 {
                     Id = x.Equipante.Id,

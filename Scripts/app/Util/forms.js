@@ -133,6 +133,17 @@ function ValidateRequired(form, formResult) {
         }
     });
 
+    $(`${form} select.required`).each(function () {
+        var input = $(this);
+        if (!input.val() || input.val() == "Pesquisar") {
+            formResult.IsValid = false;
+            AplicarCssErro($(input).parent().find('.chosen-single'))
+            $(input).parent().find('.chosen-single').addClass('required')
+            AplicarCssErro(input);
+            formResult.ErrorsInput += AddErro(input.data("field"));
+        }
+    });
+
     return formResult;
 }
 

@@ -798,7 +798,7 @@
     <Compile Include="Controllers\ParticipanteController.cs" />
     <Compile Include="Controllers\CirculoController.cs" />
     <Compile Include="Controllers\RelatorioController.cs" />
-    <Compile Include="Controllers\ReuniaoController.cs" />
+    <Compile Include="Controllers\ConsultaController.cs" />
     <Compile Include="Controllers\MeioPagamentoController.cs" />
     <Compile Include="Controllers\EventoController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
@@ -1237,6 +1237,9 @@
     <Content Include="Views\Evento\Informativos.cshtml" />
     <Content Include="Views\Arquivo\Boletim.cshtml" />
     <Content Include="Views\Igreja\Index.cshtml" />
+    <Content Include="Views\Consulta\Index.cshtml" />
+    <Content Include="Views\Consulta\Modal.cshtml" />
+    <Content Include="Views\Participante\ModalPagamentos.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />

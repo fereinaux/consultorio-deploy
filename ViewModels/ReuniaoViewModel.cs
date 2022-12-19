@@ -6,10 +6,11 @@ namespace SysIgreja.ViewModels
     public class ReuniaoViewModel
     {
         public int Id { get; set; }
-        public DateTime DataReuniao { get; set; }
+        public string DataReuniao { get; set; }
         public int Presenca { get; set; }
         public string Pauta { get; set; }
-        public string Titulo { get; set; }
+        public int PacienteId { get; set; }
+        public string Paciente { get; set; }
         public ICollection<EquipesModel> Equipes { get; set; }
     }
 

@@ -1,0 +1,97 @@
+﻿@using Utils.Extensions;
+
+<div class="row wrapper border-bottom white-bg page-heading">
+    <div class="col-lg-10">
+        <h2>@ViewBag.Title</h2>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item">
+                <a href="/Home/Index">Home</a>
+            </li>
+            <li class="breadcrumb-item">
+                <a href="#">Cadastros</a>
+            </li>
+            <li class="breadcrumb-item active">
+                <strong>@ViewBag.Title</strong>
+            </li>
+        </ol>
+    </div>
+</div>
+
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="ibox">
+        <div class="ibox-title" style="display: flex;justify-content: space-between;">
+            <h4>@ViewBag.Title</h4>
+            <div class="ibox-tools pull-right w-300">
+                <div class="row">
+                    <div class="col-sm-8">
+                        <select class="form-control" id="reuniao-eventoid-consulta" onchange="CarregarTabelaReuniao()">
+                            @foreach (var evento in ViewBag.Eventos)
+                            {
+                                <option value="@evento.Id" data-role="@evento.Role">@evento.Descricao</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="col-sm-4">
+                        <button class="btn btn-default" id="btn_Adicionar" onclick="EditReuniao(0)">Adicionar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="ibox-content">
+            <div id="calendar"></div>
+        </div>
+    </div>
+</div>
+
+
+@Html.Partial("~/Views/Consulta/Modal.cshtml")
+@Html.Partial("~/Views/Participante/ModalPagamentos.cshtml")
+
+
+@section Scripts {
+
+    <script>
+        function carregarConsultas() {
+            $.ajax({
+                url: '/Consulta/GetReunioes',
+                datatype: "json",
+                data: { EventoId: $("#reuniao-eventoid-consulta").val(), },
+                type: "GET",
+                success: (data) => {
+                    var calendarEl = document.getElementById('calendar');
+                    var calendar = new FullCalendar.Calendar(calendarEl, {
+                        initialView: 'timeGridDay',
+                        locale: 'pt-br',
+                        headerToolbar: {
+                            start: 'today prev,next', // will normally be on the left. if RTL, will be on the right
+                            center: 'title',
+                            end: 'dayGridMonth,dayGridWeek,timeGridDay,listDay' // will normally be on the right. if RTL, will be on the left
+                        },
+                        events: data.data.map(e => {
+                            return {
+                                title: e.Paciente,
+                                start: e.DataReuniao,
+                                extendedProps: {
+                                    id: e.Id
+                                }
+                            }
+                        }),
+                        eventClick: function (info) {
+                            EditReuniao(info.event._def.extendedProps.id)
+                        },
+
+                        dateClick: function (info) {
+                            EditReuniao(0, moment(info.dateStr).format('DD/MM/YYYY HH:mm'))
+                        },
+                    });
+                    calendar.render();
+                }
+            })
+        }
+        $(document).ready(function () {
+            GetParticipantes()
+            carregarConsultas()
+            onChangePagamentos()
+        });
+    </script>
+}

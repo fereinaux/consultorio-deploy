@@ -126,7 +126,7 @@ ${GetButton('Pagamentos', JSON.stringify(row), 'verde', 'far fa-money-bill-alt',
                             </label>`: `<span style="font-size:18px" class="text-success p-l-xs pointer" onclick="toggleFoto(${data})"><i class="fa fa-camera" aria-hidden="true" title="Foto"></i></span>`
                         }
                             ${GetAnexosButton('Anexos', data, row.QtdAnexos)}
-                            
+                            ${GetButton('CarregarTableConsultas', data, 'cinza', 'fa-calendar', 'Consultas')}
                             ${GetButton('EditParticipante', data, 'blue', 'fa-edit', 'Editar')}                               
                             ${GetButton('Opcoes', JSON.stringify(row), 'cinza', 'fas fa-info-circle', 'Opções')}                            
                     </form>`
@@ -331,110 +331,6 @@ function Foto(row) {
     });
 }
 
-
-function GetAnexosLancamento(id) {
-    const tableArquivoConfig = {
-        language: languageConfig,
-        lengthMenu: [200, 500, 1000],
-        colReorder: false,
-        serverSide: false,
-        deferloading: 0,
-        orderCellsTop: true,
-        fixedHeader: true,
-        filter: true,
-        orderMulti: false,
-        responsive: true, stateSave: true, stateSaveCallback: stateSaveCallback, stateLoadCallback: stateLoadCallback,
-        destroy: true,
-        dom: domConfigNoButtons,
-        columns: [
-            { data: "Nome", name: "Nome", autoWidth: true },
-            { data: "Extensao", name: "Extensao", autoWidth: true },
-            {
-                data: "Id", name: "Id", orderable: false, width: "15%",
-                "render": function (data, type, row) {
-                    return `${GetButton('GetArquivo', data, 'blue', 'fa-download', 'Download')}
-                            ${GetButton('DeleteArquivo', data, 'red', 'fa-trash', 'Excluir')}`;
-                }
-            }
-        ],
-        order: [
-            [0, "asc"]
-        ],
-        ajax: {
-            url: '/Arquivo/GetArquivosLancamento',
-            data: { id: id ? id : $("#LancamentoIdModal").val() },
-            datatype: "json",
-            type: "POST"
-        }
-    };
-
-    $("#table-anexos").DataTable(tableArquivoConfig);
-}
-
-function GetAnexos(id) {
-    const tableArquivoConfig = {
-        language: languageConfig,
-        lengthMenu: [200, 500, 1000],
-        colReorder: false,
-        serverSide: false,
-        deferloading: 0,
-        orderCellsTop: true,
-        fixedHeader: true,
-        filter: true,
-        orderMulti: false,
-        responsive: true, stateSave: true, stateSaveCallback: stateSaveCallback, stateLoadCallback: stateLoadCallback,
-        destroy: true,
-        dom: domConfigNoButtons,
-        columns: [
-            { data: "Nome", name: "Nome", autoWidth: true },
-            { data: "Extensao", name: "Extensao", autoWidth: true },
-            {
-                data: "Id", name: "Id", orderable: false, width: "15%",
-                "render": function (data, type, row) {
-                    return `${GetButton('GetArquivo', data, 'blue', 'fa-download', 'Download')}
-                            ${GetButton('DeleteArquivo', data, 'red', 'fa-trash', 'Excluir')}`;
-                }
-            }
-        ],
-        order: [
-            [0, "asc"]
-        ],
-        ajax: {
-            url: '/Arquivo/GetArquivosParticipante',
-            data: { participanteid: id ? id : $("#ParticipanteIdModal").val() },
-            datatype: "json",
-            type: "POST"
-        }
-    };
-
-    $("#table-anexos").DataTable(tableArquivoConfig);
-}
-
-function GetArquivo(id) {
-    window.open(`/Arquivo/GetArquivo/${id}`)
-}
-
-function DeleteArquivo(id) {
-    ConfirmMessageDelete().then((result) => {
-        if (result) {
-            $.ajax({
-                url: "/Arquivo/DeleteArquivo/",
-                datatype: "json",
-                type: "POST",
-                contentType: 'application/json; charset=utf-8',
-                data: JSON.stringify(
-                    {
-                        Id: id
-                    }),
-                success: function () {
-                    SuccessMesageDelete();
-                    GetAnexos();
-                }
-            });
-        }
-    });
-}
-
 function toggleFoto(id) {
     ConfirmMessage("Essa ação removerá a foto, deseja continuar?").then((result) => {
         if (result) {
@@ -483,56 +379,8 @@ function MakeEquipante(id) {
     })
 }
 
-
-function PostArquivo() {
-
-    var dataToPost = new FormData($('#frm-upload-arquivo-modal')[0]);
-    var filename = dataToPost.get('arquivo-modal').name
-    if (realista.Nome) {
-        var arquivo = new File([dataToPost.get('arquivo-modal')], 'Pagamento ' + realista.Nome + filename.substr(filename.indexOf('.')));
-    } else {
-        var arquivo = new File([dataToPost.get('arquivo-modal')], filename);
-    }
-    dataToPost.set('Arquivo', arquivo)
-    dataToPost.set('ParticipanteId', dataToPost.get('ParticipanteIdModal'))
-    dataToPost.set('LancamentoId', dataToPost.get('LancamentoIdModal'))
-    $.ajax(
-        {
-            processData: false,
-            contentType: false,
-            type: "POST",
-            data: dataToPost,
-            url: "Arquivo/PostArquivo",
-            success: function () {
-                if (dataToPost.get('LancamentoIdModal')) {
-                    GetAnexosLancamento();
-                } else {
-                    $('#arquivo-modal').val("")
-                    GetAnexos();
-                }
-
-            }
-        });
-}
-
-function Anexos(id) {
-    $("#ParticipanteIdModal").val(id);
-    $("#LancamentoIdModal").val('');
-    GetAnexos(id);
-    $("#modal-anexos").modal();
-}
-
-function AnexosLancamento(row) {
-    $("#LancamentoIdModal").val(row.Id);
-    $("#ParticipanteIdModal").val(row.ParticipanteId);
-    GetAnexosLancamento(row.Id)
-    $("#modal-pagamentos").modal('hide');
-    $("#modal-anexos").modal();
-}
-
-
-$("#arquivo-modal").change(function () {
-    PostArquivo();
+$("#modal-reunioes").on('hidden.bs.modal', function () {
+    CarregarTableConsultas()
 });
 
 $("#modal-anexos").on('hidden.bs.modal', function () {
@@ -626,43 +474,6 @@ function getTelefone(destinatario) {
     }
 }
 
-function CarregarTabelaPagamentos(id) {
-    const tablePagamentosConfig = {
-        language: languageConfig,
-        lengthMenu: [200, 500, 1000],
-        colReorder: false,
-        serverSide: false,
-        deferloading: 0,
-        orderCellsTop: true,
-        fixedHeader: true,
-        filter: true,
-        orderMulti: false,
-        responsive: true, stateSave: true, stateSaveCallback: stateSaveCallback, stateLoadCallback: stateLoadCallback,
-        destroy: true,
-        dom: domConfigNoButtons,
-        columns: [
-            { data: "FormaPagamento", name: "FormaPagamento", autoWidth: true },
-            { data: "Valor", name: "Valor", autoWidth: true },
-            {
-                data: "Id", name: "Id", orderable: false, width: "15%",
-                "render": function (data, type, row) {
-                    return `${GetAnexosButton('AnexosLancamento', JSON.stringify(row), row.QtdAnexos)}
-                            ${GetButton('DeletePagamento', data, 'red', 'fa-trash', 'Excluir')}`;
-                }
-            }
-        ],
-        order: [
-            [0, "asc"]
-        ],
-        ajax: {
-            url: '/Lancamento/GetPagamentos',
-            data: { ParticipanteId: id },
-            datatype: "json",
-            type: "POST"
-        }
-    };
-    $("#table-pagamentos").DataTable(tablePagamentosConfig);
-}
 
 $(document).ready(function () {
     HideMenu()
@@ -673,47 +484,15 @@ $(document).ready(function () {
     if (queryId) {
         Opcoes({ Id: queryId })
     }
+    onChangePagamentos()
+    GetParticipantes()
 });
-
-
-function Pagamentos(row) {
-    realista = row;
-    $("#pagamentos-whatsapp").val(row.Fone);
-    $("#pagamentos-valor").val($("#pagamentos-valor").data("valor-realista"));
-    $("#pagamentos-origem").val('')
-    $("#pagamentos-data").val(moment().format('DD/MM/YYYY'));
-    $("#pagamentos-participanteid").val(row.Id);
-    $("#pagamentos-meiopagamento").val($("#pagamentos-meiopagamento option:first").val());
-    CarregarTabelaPagamentos(row.Id);
-    $("#modal-pagamentos").modal();
-}
 
 $("#modal-pagamentos").on('hidden.bs.modal', function () {
     if (!$('#LancamentoIdModal').val()) {
         CarregarTabelaParticipante();
     }
 })
-
-function DeletePagamento(id) {
-    ConfirmMessageDelete().then((result) => {
-        if (result) {
-            $.ajax({
-                url: "/Lancamento/DeletePagamento/",
-                datatype: "json",
-                type: "POST",
-                contentType: 'application/json; charset=utf-8',
-                data: JSON.stringify(
-                    {
-                        Id: id
-                    }),
-                success: function () {
-                    SuccessMesageDelete();
-                    CarregarTabelaPagamentos($("#pagamentos-participanteid").val());
-                }
-            });
-        }
-    });
-}
 
 function ToggleSexo(id) {
     ConfirmMessage("Confirma a mudança de gênero?").then((result) => {
@@ -800,32 +579,6 @@ function AtivarInscricao(row) {
     });
 }
 
-function PostPagamento() {
-    if (ValidateForm(`#form-pagamento`)) {
-        $.ajax({
-            url: "/Lancamento/PostPagamento/",
-            datatype: "json",
-            type: "POST",
-            contentType: 'application/json; charset=utf-8',
-            data: JSON.stringify(
-                {
-                    Origem: $("#pagamentos-origem").val(),
-                    EventoId: $("#participante-eventoid").val(),
-                    ParticipanteId: $("#pagamentos-participanteid").val(),
-                    Data: moment($("#pagamentos-data").val(), 'DD/MM/YYYY', 'pt-br').toJSON(),
-                    MeioPagamentoId: $("#pagamentos-meiopagamento").val(),
-                    ContaBancariaId: $('.contabancaria').hasClass('d-none') ? 0 : $("#pagamentos-contabancaria").val(),
-                    Valor: Number($("#pagamentos-valor").val())
-                }),
-            success: function () {
-                $("#pagamentos-origem").val('')
-                $("#pagamentos-data").val(moment().format('DD/MM/YYYY'));
-                CarregarTabelaPagamentos($("#pagamentos-participanteid").val());
-                SuccessMesageOperation();
-            }
-        });
-    }
-}
 
 function getMensagensByTipo(tipos) {
     $.ajax({

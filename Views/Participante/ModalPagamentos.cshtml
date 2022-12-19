@@ -1,0 +1,373 @@
+﻿<div class="modal inmodal" id="modal-pagamentos" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content animated bounceInRight">
+            <div class="modal-body">
+                <div class="moldura-modal p-h-xs" id="form-pagamentos">
+                    <div class="row p-h-xs">
+                        <input type="hidden" id="pagamentos-participanteid" />
+                        <input type="hidden" id="pagamentos-whatsapp" />
+                        <div class="col-sm-6 p-w-md text-center">
+                            <h5>Forma de Pagamento</h5>
+
+                            <select class="form-control" id="pagamentos-meiopagamento" onchange="CarregarValorTaxa()">
+                            </select>
+
+                        </div>
+
+                        <div class="col-sm-6 p-w-md text-center">
+                            <h5>Valor</h5>
+
+                            <input type="number" step="any" value="0" class="form-control required" data-valor-realista="@ViewBag.Valor" id="pagamentos-valor" data-field="Valor" />
+                        </div>
+                        <div class="col-sm-6 p-w-md m-t-md text-center">
+                            <h5>Origem</h5>
+
+                            <input type="text" class="form-control " id="pagamentos-origem" data-field="Origem" />
+                        </div>
+                        <div class="col-sm-6 p-w-md m-t-md text-center">
+                            <h5>Data</h5>
+
+                            <input type="text" class="form-control full-date required" id="pagamentos-data" data-field="Data do Pagamento" />
+                        </div>
+
+
+                        <div class="col-sm-12 p-md text-center">
+                            <button type="button" class="btn btn-white" onclick="PostPagamento()">Salvar</button>
+                        </div>
+                        <div class="col-sm-12 p-md">
+                            <table id="table-pagamentos" class="table table-striped table-bordered table-hover" cellspacing="0" style="width: 100%">
+                                <thead>
+                                    <tr>
+                                        <th>Forma de Pagamento</th>
+                                        <th>Data</th>
+                                        <th>Valor</th>
+                                        <th>Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-white pull-right m-l-sm" data-dismiss="modal">Fechar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal inmodal" id="modal-anexos" role="dialog" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content animated bounceInRight">
+            <div class="modal-body">
+                <div class="moldura-modal p-h-xs">
+
+                    <div class="row p-md">
+                        <select class="form-control m-b-sm" id="equipante-eventoid">
+                            @foreach (var evento in ViewBag.Eventos)
+                            {
+                                <option value="@evento.Id" data-role="@evento.Role">@evento.Descricao</option>
+                            }
+                        </select>
+                        <form enctype="multipart/form-data" id="frm-upload-arquivo-modal" method="post" novalidate="novalidate">
+                            <input type="hidden" name="ParticipanteIdModal" id="ParticipanteIdModal" />
+                            <input type="hidden" name="LancamentoIdModal" id="LancamentoIdModal" />
+                            <label for="arquivo-modal" style="width: 100%;" class="inputFile">
+                                <span class="btn btn-default inputFile" style="width: 100%;" aria-hidden="true">Adicionar</span>
+                                <input style="display: none;" class="custom-file-input inputFile" id="arquivo-modal" name="arquivo-modal" type="file" value="">
+                            </label>
+                        </form>
+                        <table id="table-anexos" class="table table-striped table-bordered table-hover" cellspacing="0" style="width: 100%">
+                            <thead>
+                                <tr>
+                                    <th>Arquivo</th>
+                                    <th>Extensão</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-white pull-right m-l-sm" data-dismiss="modal">Fechar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<style>
+</style>
+
+<script>
+    function Anexos(id) {
+        $("#ParticipanteIdModal").val(id);
+        $("#LancamentoIdModal").val('');
+        GetAnexos(id);
+        $("#modal-anexos").modal();
+    }
+
+
+    function onChangePagamentos() {
+        $("#arquivo-modal").change(function () {
+            PostArquivo();
+        });
+    }
+
+
+    function CarregarTabelaPagamentos(id) {
+        const tablePagamentosConfig = {
+            language: languageConfig,
+            lengthMenu: [200, 500, 1000],
+            colReorder: false,
+            serverSide: false,
+            deferloading: 0,
+            orderCellsTop: true,
+            fixedHeader: true,
+            filter: true,
+            orderMulti: false,
+            responsive: true, stateSave: true, stateSaveCallback: stateSaveCallback, stateLoadCallback: stateLoadCallback,
+            destroy: true,
+            dom: domConfigNoButtons,
+            columns: [
+                { data: "FormaPagamento", name: "FormaPagamento", autoWidth: true },
+                { data: "DataLancamento", name: "DataLancamento", autoWidth: true },
+                { data: "Valor", name: "Valor", autoWidth: true },
+                {
+                    data: "Id", name: "Id", orderable: false, width: "15%",
+                    "render": function (data, type, row) {
+                        return `${GetAnexosButton('AnexosLancamento', JSON.stringify(row), row.QtdAnexos)}
+                            ${GetButton('DeletePagamento', data, 'red', 'fa-trash', 'Excluir')}`;
+                    }
+                }
+            ],
+            order: [
+                [0, "asc"]
+            ],
+            ajax: {
+                url: '/Lancamento/GetPagamentos',
+                data: { ParticipanteId: id },
+                datatype: "json",
+                type: "POST"
+            }
+        };
+        $("#table-pagamentos").DataTable(tablePagamentosConfig);
+    }
+
+
+    function Pagamentos(row) {
+        realista = row;
+        $("#pagamentos-whatsapp").val(row.Fone);
+        $("#pagamentos-valor").val($("#pagamentos-valor").data("valor-realista"));
+        $("#pagamentos-origem").val('')
+        $("#pagamentos-data").val(moment().format('DD/MM/YYYY'));
+        $("#pagamentos-participanteid").val(row.Id);
+        $("#pagamentos-meiopagamento").val($("#pagamentos-meiopagamento option:first").val());
+        CarregarTabelaPagamentos(row.Id);
+        $("#modal-pagamentos").modal();
+    }
+
+
+    function DeletePagamento(id) {
+        ConfirmMessageDelete().then((result) => {
+            if (result) {
+                $.ajax({
+                    url: "/Lancamento/DeletePagamento/",
+                    datatype: "json",
+                    type: "POST",
+                    contentType: 'application/json; charset=utf-8',
+                    data: JSON.stringify(
+                        {
+                            Id: id
+                        }),
+                    success: function () {
+                        SuccessMesageDelete();
+                        CarregarTabelaPagamentos($("#pagamentos-participanteid").val());
+                    }
+                });
+            }
+        });
+    }
+
+
+
+    function PostArquivo() {
+
+        var dataToPost = new FormData($('#frm-upload-arquivo-modal')[0]);
+        var filename = dataToPost.get('arquivo-modal').name
+
+        var arquivo = new File([dataToPost.get('arquivo-modal')], filename);
+
+        dataToPost.set('Arquivo', arquivo)
+        dataToPost.set('ParticipanteId', dataToPost.get('ParticipanteIdModal'))
+        dataToPost.set('LancamentoId', dataToPost.get('LancamentoIdModal'))
+        $.ajax(
+            {
+                processData: false,
+                contentType: false,
+                type: "POST",
+                data: dataToPost,
+                url: "/Arquivo/PostArquivo",
+                success: function () {
+                    if (dataToPost.get('LancamentoIdModal')) {
+                        GetAnexosLancamento();
+                    } else {
+                        $('#arquivo-modal').val("")
+                        GetAnexos();
+                    }
+
+                }
+            });
+    }
+
+
+    function PostPagamento() {
+        if (ValidateForm(`#form-pagamento`)) {
+            $.ajax({
+                url: "/Lancamento/PostPagamento/",
+                datatype: "json",
+                type: "POST",
+                contentType: 'application/json; charset=utf-8',
+                data: JSON.stringify(
+                    {
+                        Origem: $("#pagamentos-origem").val(),
+                        EventoId: $("#participante-eventoid").val() || $("#reuniao-eventoid-consulta").val() || $("#eventoid").val(),
+                        ParticipanteId: $("#pagamentos-participanteid").val(),
+                        Data: moment($("#pagamentos-data").val(), 'DD/MM/YYYY', 'pt-br').toJSON(),
+                        MeioPagamentoId: $("#pagamentos-meiopagamento").val(),
+                        ContaBancariaId: $('.contabancaria').hasClass('d-none') ? 0 : $("#pagamentos-contabancaria").val(),
+                        Valor: Number($("#pagamentos-valor").val())
+                    }),
+                success: function () {
+                    $("#pagamentos-origem").val('')
+                    $("#pagamentos-data").val(moment().format('DD/MM/YYYY'));
+                    CarregarTabelaPagamentos($("#pagamentos-participanteid").val());
+                    SuccessMesageOperation();
+                }
+            });
+        }
+    }
+
+
+    function AnexosLancamento(row) {
+        $("#LancamentoIdModal").val(row.Id);
+        $("#ParticipanteIdModal").val(row.ParticipanteId);
+        GetAnexosLancamento(row.Id)
+        $("#modal-pagamentos").modal('hide');
+        $("#modal-anexos").modal();
+    }
+
+
+    function GetAnexosLancamento(id) {
+        const tableArquivoConfig = {
+            language: languageConfig,
+            lengthMenu: [200, 500, 1000],
+            colReorder: false,
+            serverSide: false,
+            deferloading: 0,
+            orderCellsTop: true,
+            fixedHeader: true,
+            filter: true,
+            orderMulti: false,
+            responsive: true, stateSave: true, stateSaveCallback: stateSaveCallback, stateLoadCallback: stateLoadCallback,
+            destroy: true,
+            dom: domConfigNoButtons,
+            columns: [
+                { data: "Nome", name: "Nome", autoWidth: true },
+                { data: "Extensao", name: "Extensao", autoWidth: true },
+                {
+                    data: "Id", name: "Id", orderable: false, width: "15%",
+                    "render": function (data, type, row) {
+                        return `${GetButton('GetArquivo', data, 'blue', 'fa-download', 'Download')}
+                            ${GetButton('DeleteArquivo', data, 'red', 'fa-trash', 'Excluir')}`;
+                    }
+                }
+            ],
+            order: [
+                [0, "asc"]
+            ],
+            ajax: {
+                url: '/Arquivo/GetArquivosLancamento',
+                data: { id: id ? id : $("#LancamentoIdModal").val() },
+                datatype: "json",
+                type: "POST"
+            }
+        };
+
+        $("#table-anexos").DataTable(tableArquivoConfig);
+    }
+
+    function GetAnexos(id) {
+        const tableArquivoConfig = {
+            language: languageConfig,
+            lengthMenu: [200, 500, 1000],
+            colReorder: false,
+            serverSide: false,
+            deferloading: 0,
+            orderCellsTop: true,
+            fixedHeader: true,
+            filter: true,
+            orderMulti: false,
+            responsive: true, stateSave: true, stateSaveCallback: stateSaveCallback, stateLoadCallback: stateLoadCallback,
+            destroy: true,
+            dom: domConfigNoButtons,
+            columns: [
+                { data: "Nome", name: "Nome", autoWidth: true },
+                { data: "Extensao", name: "Extensao", autoWidth: true },
+                {
+                    data: "Id", name: "Id", orderable: false, width: "15%",
+                    "render": function (data, type, row) {
+                        return `${GetButton('GetArquivo', data, 'blue', 'fa-download', 'Download')}
+                            ${GetButton('DeleteArquivo', data, 'red', 'fa-trash', 'Excluir')}`;
+                    }
+                }
+            ],
+            order: [
+                [0, "asc"]
+            ],
+            ajax: {
+                url: '/Arquivo/GetArquivosParticipante',
+                data: { participanteid: id ? id : $("#ParticipanteIdModal").val() },
+                datatype: "json",
+                type: "POST"
+            }
+        };
+
+        $("#table-anexos").DataTable(tableArquivoConfig);
+    }
+
+    function GetArquivo(id) {
+        window.open(`/Arquivo/GetArquivo/${id}`)
+    }
+
+    function DeleteArquivo(id) {
+        ConfirmMessageDelete().then((result) => {
+            if (result) {
+                $.ajax({
+                    url: "/Arquivo/DeleteArquivo/",
+                    datatype: "json",
+                    type: "POST",
+                    contentType: 'application/json; charset=utf-8',
+                    data: JSON.stringify(
+                        {
+                            Id: id
+                        }),
+                    success: function () {
+                        SuccessMesageDelete();
+                        GetAnexos();
+                    }
+                });
+            }
+        });
+    }
+
+
+</script>
+

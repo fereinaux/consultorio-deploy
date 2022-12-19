@@ -1,6 +1,9 @@
 ﻿+$(document).ready(() => {
     HideMenu();
     GetResultadosAdmin();
+    carregarConsultas()
+    GetParticipantes()
+    onChangePagamentos()
     //GetResultadosGeral();
 });
 
@@ -17,6 +20,48 @@ function getEquipantesExcel() {
             window.location = `DownloadTempFile?fileName=Equipe ${$("#eventoid option:selected").text()}.xlsx&g=` + data;
         }
     });
+}
+
+function carregarConsultas() {
+    $.ajax({
+        url: '/Consulta/GetReunioes',
+        datatype: "json",
+        data: { EventoId: $("#eventoid").val(), },
+        type: "GET",
+        success: (data) => {
+            var calendarEl = document.getElementById('calendar');
+            var calendar = new FullCalendar.Calendar(calendarEl, {
+                customButtons: {
+                    new: {
+                        text: 'Nova consulta',
+                        click: function () {
+                            EditReuniao(0)
+                        }
+                    }
+                },
+                initialView: 'listDay',
+                locale: 'pt-br',
+                headerToolbar: {
+                    start: 'prev,next,today', // will normally be on the left. if RTL, will be on the right
+                    center: 'title',
+                    end: 'new' // will normally be on the right. if RTL, will be on the left
+                },
+                events: data.data.map(e => {
+                    return {
+                        title: e.Paciente,
+                        start: e.DataReuniao,
+                        extendedProps: {
+                            id: e.Id
+                        }
+                    }
+                }),
+                eventClick: function (info) {
+                    EditReuniao(info.event._def.extendedProps.id)
+                },
+            });
+            calendar.render();
+        }
+    })
 }
 
 function GetResultadosGeral() {
