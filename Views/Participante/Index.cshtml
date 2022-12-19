@@ -33,34 +33,12 @@
         <div class="ibox-content">
             <div class="row">
                 <div class="col-xs-12 col-lg-2">
-                    <h5>Evento</h5>
+                    <h5>Consultório</h5>
                     <select class="form-control" id="participante-eventoid" onchange="CarregarTabelaParticipante()">
                         @foreach (var evento in ViewBag.Eventos)
                         {
                             <option data-status="@evento.Status" value="@evento.Id" data-role="@evento.Role">@evento.Descricao</option>
                         }
-                    </select>
-                </div>
-                <div class="col-xs-12 col-lg-2">
-                    <h5>Status</h5>
-                    <select class="form-control" id="participante-status" multiple onchange="CarregarTabelaParticipante()">
-
-                        <option value=8>Inscrito</option>
-                        <option value=9>Confirmado</option>
-                        <option value=12>Presente</option>
-                        <option value=10>Em espera</option>
-                        <option value=6>Cancelado</option>
-
-                    </select>
-                </div>
-                <div class="col-xs-12 col-lg-2">
-                    <h5>Padrinho</h5>
-                    <select class="form-control" id="participante-padrinhoid" multiple onchange="CarregarTabelaParticipante()">
-                    </select>
-                </div>
-                <div class="col-xs-12 col-lg-2">
-                    <h5 class="title-circulo">Círculo</h5>
-                    <select class="form-control" id="participante-circuloid" multiple onchange="CarregarTabelaParticipante()">
                     </select>
                 </div>
                 <div class="col-xs-12 col-lg-2">
@@ -75,10 +53,6 @@
                 </div>
 
             </div>
-            <div class="row">
-
-
-            </div>
         </div>
     </div>
 
@@ -86,7 +60,7 @@
         <div class="ibox-title" style="display: flex;justify-content: space-between;">
             <h4>@ViewBag.Title</h4>
             <div style=" width: 70%;" class="ibox-tools pull-right">
-                <button class="btn btn-default" id="btn_Imprimir" onclick="openModalCracha()">Credencial</button>
+                @*<button class="btn btn-default" id="btn_Imprimir" onclick="openModalCracha()">Credencial</button>*@
                 <button class="btn btn-default" style="display:none" id="btn_bulk" onclick="openBulkActions()">Editar</button>
                 <button class="btn btn-default" id="btn_Adicionar" onclick="EditParticipante(0)">Adicionar</button>
             </div>
@@ -99,36 +73,7 @@
                         <th></th>
                         <th></th>
                         <th>Nome</th>
-                        <th>Apelido</th>
-                        <th></th>
-                        <th>Nome da Mãe</th>
-                        <th>Fone da Mãe</th>
-                        <th>Nome do Pai</th>
-                        <th>Fone do Pai</th>
-                        <th>Nome do Contato</th>
-                        <th>Fone do Contato</th>
-                        <th>Nome do Convite</th>
-                        <th>Fone do Convite</th>
                         <th>Idade</th>
-                        <th>Padrinho</th>
-                        <th>Status</th>
-                        <th></th>
-                        <th></th>
-                        <th></th>
-                        <th></th>
-                        <th></th>
-                        <th></th>
-                        <th></th>
-                        <th></th>
-                        <th></th>
-                        <th></th>
-                        <th></th>
-                        <th></th>
-                        <th></th>
-                        <th></th>
-                        <th></th>
-                        <th></th>
-                        <th>Data Inscrição</th>
                         <th>Ações</th>
                     </tr>
                 </thead>
@@ -218,15 +163,15 @@
                     <button type="button" class="btn btn-primary" id="btn-next" onclick="next()" style="position:absolute;top:20px;right:20px">Próximo</button>
                 </div>
                 <div class="moldura-modal p-h-xs" id="form-opcoes">
-                    <h3 class="text-center">Mensagem</h3>
+                    @*<h3 class="text-center">Mensagem</h3>
                     <div class="row m-md">
                         <div class="col-lg-12">
                             <select class="form-control" id="msg-list">
                             </select>
                         </div>
-                    </div>
+                    </div>*@
 
-                    <h3 class="text-center">Destinatário</h3>
+                    @*<h3 class="text-center">Destinatário</h3>
                     <div class="row m-md">
                         <div class="col-lg-3 col-sm-6 panel-msg p-w-md text-center pointer contato-mae mae" onclick="select2('mae')">
                             <div style="margin:auto">
@@ -263,7 +208,7 @@
                                 <h5 class="text-center realistatext"></h5>
                             </div>
                         </div>
-                    </div>
+                    </div>*@
 
                     <h3 class="text-center">Marcadores</h3>
                     <div class="row m-md">

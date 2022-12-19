@@ -87,8 +87,6 @@ function ValidateForm(form) {
     formResult = ValidateRequired(form, formResult);
     formResult = ValidateMinLength(form, formResult);
     formResult = ValidateMaxLength(form, formResult);
-    formResult = ValidateEmail(form, formResult);
-    formResult = ValidateFone(form, formResult);
     formResult = ValidateData(form, formResult);
 
     var camposObrigatorios = "";

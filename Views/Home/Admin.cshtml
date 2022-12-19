@@ -46,51 +46,11 @@
                                 <i class="m-b-sm fa fa-users fa-3x"></i>
                                 <h1 class="m-xs" id="total"></h1>
 
-                                <small>Participantes</small>
+                                <small>Pacientes</small>
                             </div>
                         </div>
                     </div>
                     <div class="col-xs-6 col-lg-4 p-w-xs">
-                        <div class="width100 bloco widget navy-bg p-md text-center">
-                            <div class="m-b-xs">
-                                <i class="m-b-sm fa fa-check fa-3x"></i>
-                                <h1 class="m-xs" id="confirmados"></h1>
-
-                                <small>Confirmados</small>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-xs-6 col-lg-4 p-w-xs">
-                        <div class="width100 bloco widget black-bg p-md text-center">
-                            <div class="m-b-xs">
-                                <i class="m-b-sm fa fa-suitcase fa-3x"></i>
-                                <h1 class="m-xs" id="presentes"></h1>
-
-                                <small>Presentes</small>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-xs-6 col-lg-3 p-w-xs">
-                        <div class="width100 bloco widget red-bg p-md text-center">
-                            <div class="m-b-xs">
-                                <i class="m-b-sm fa fa-times fa-3x"></i>
-                                <h1 class="m-xs" id="cancelados"></h1>
-
-                                <small>Cancelados</small>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-xs-6 col-lg-3 p-w-xs">
-                        <div class="width100 bloco widget bg-warning p-md text-center">
-                            <div class="m-b-xs">
-                                <i class="m-b-sm fa fa-user-clock fa-3x"></i>
-                                <h1 class="m-xs" id="espera"></h1>
-
-                                <small>em Espera</small>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-xs-6 col-lg-3 p-w-xs">
                         <div class="width100 bloco widget male p-lg text-center">
                             <div class="m-b-xs">
                                 <i class="m-b-sm fa fa-male fa-3x male"></i>
@@ -100,7 +60,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-xs-6 col-lg-3 p-w-xs">
+                    <div class="col-xs-6 col-lg-4 p-w-xs">
                         <div class="width100 bloco widget female p-lg text-center">
                             <div class="m-b-xs">
                                 <i class="m-b-sm fa fa-female fa-3x female"></i>
@@ -153,7 +113,7 @@
                         <div class="widget-head-color-box lazur-bg p-lg text-center">
                             <div class="m-b-md">
                                 <h2 class="font-bold no-margins">
-                                    Últimos Inscritos
+                                    Novos Pacientes
                                 </h2>
                             </div>
                         </div>
@@ -169,71 +129,6 @@
                             </table>
                         </div>
                     </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-lg-6 col-xs-12 p-w-xs">
-            <div class="pointer">
-                <div class="widget-head-color-box black-bg p-lg text-center">
-                    <div class="m-b-md">
-                        <h2 class="font-bold no-margins">
-                            Equipes
-                        </h2>
-                    </div>
-
-                    <div style="display:flex">
-                        <div style="display:flex; margin:auto">
-                            <i class="m-b-sm fa fa-female fa-2x m-r-xs" style="color: white !important; margin-top: auto; margin-bottom: auto"></i>
-                            <span class="m-r-lg" style="margin-top:auto;margin-bottom:auto" id="equipe-female">32</span>
-                            <i class="m-b-sm fa fa-male fa-2x m-r-xs" style="color: white !important; margin-top: auto; margin-bottom: auto"></i>
-                            <span class="m-r-lg" style="margin-top:auto;margin-bottom:auto" id="equipe-male">32</span>
-
-                        </div>
-                    </div>
-                </div>
-                <div class="widget-text-box">
-                    <table class="table desktop">
-                        <thead>
-                            <tr>
-                                <th>Equipe</th>
-                                <th>Membros</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tb-equipes"></tbody>
-                        <tfoot>
-                            <tr>
-                                <th>Total</th>
-                                <th id="totalEquipe"></th>
-                            </tr>
-                        </tfoot>
-                    </table>
-                    <div class="mobile">
-                        <div class="row justify-content-center text-center equipe-mobile-container">
-
-
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="pointer" onclick="window.location.href='@Url.Action("Index", "Reuniao")'">
-                <div class="widget-head-color-box blue-bg p-lg text-center">
-                    <div class="m-b-md">
-                        <h2 class="font-bold no-margins">
-                            Reuniões
-                        </h2>
-                    </div>
-                </div>
-                <div class="widget-text-box">
-                    <table class="table">
-                        <thead>
-                            <tr>
-                                <th>Reunião</th>
-                                <th>Data/Hora</th>
-                                <th>Presentes</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tb-reunioes"></tbody>
-                    </table>
                 </div>
             </div>
         </div>

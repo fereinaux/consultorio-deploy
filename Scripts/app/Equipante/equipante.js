@@ -36,283 +36,57 @@ ${result.data.map(p => `<option value=${p.Id}>${p.Nome}</option>`)}
 
 function loadEquipes() {
     $("#table-equipantes").DataTable().destroy()
-    checkEvento()
 
-    getEquipes()
     CarregarTabelaEquipante()
 
 
 }
 
 function CarregarTabelaEquipante(callbackFunction) {
-    $('#btn_bulk').css('display', 'none')
 
     const tableEquipanteConfig = {
         language: languageConfig,
-        searchDelay: 1000,
-        lengthMenu: [10, 30, 50, 100, 200],
-        colReorder: true,
+        lengthMenu: [200, 500, 1000],
+        colReorder: false,
         serverSide: true,
-        scrollX: true,
-        scrollXollapse: true,
+        deferloading: 0,
         orderCellsTop: true,
         fixedHeader: true,
         filter: true,
         orderMulti: false,
-        responsive: true,
-        stateSave: true, stateSaveCallback: stateSaveCallback, stateLoadCallback: stateLoadCallback,
+        responsive: true, stateSave: true, stateSaveCallback: stateSaveCallback, stateLoadCallback: stateLoadCallback,
         destroy: true,
-        dom: '<"html5buttons"B>lTgitp',
-        colReorder: {
-            fixedColumnsLeft: 1
-        },
-        buttons: getButtonsConfig(`Participantes ${$("#equipante-eventoid-filtro option:selected").text()}`),
+        dom: domConfig,
+        buttons: getButtonsConfig('Eventos'),
         columns: [
             {
-                data: "Id", name: "Id", orderable: false, width: "2%", className: 'noVis noSearch',
-                "render": function (data, type, row) {
-                    return `${GetCheckBox(data, row.Presenca)}`;
-                }
-            },
-            { data: "Sexo", name: "Sexo", visible: false, className: 'noVis noSearch', },
-            {
-                data: "Sexo", title: "Sexo", orderData: 0, name: "Sexo", className: "text-center noSearch", width: "5%",
-                "render": function (data, type, row) {
-                    if (data == "Masculino") {
-                        icon = "fa-male";
-                        cor = "#0095ff";
-                    }
-                    else {
-                        icon = "fa-female";
-                        cor = "#ff00d4";
-                    }
-                    return `<span onclick="ToggleSexo(${row.Id})" style = "font-size:18px;color:${cor};" class="p-l-xs pointer"> <i class="fa ${icon}" aria-hidden="true" title="${data}"></i></span >`;
-                }
-            },
-            {
-                data: "Nome", name: "Nome", autoWidth: true, render: function (data, type, row) {
-                    return `<div>
-                        <span>${row.Nome}</br></span>
-                        ${$("#equipante-eventoid-filtro").val() != 999 ? row.Etiquetas.map(etiqueta => {
-                        if (etiqueta) {
-                            return `<span  class="badge m-r-xs" style="background-color:${etiqueta.Cor};color:#fff">${etiqueta.Nome}</span>`
-                        }
-                    }).join().replace(/,/g, '') : ""}
-                    </div>`
-                }
-            },
-            { data: "Idade", name: "Idade", class: "noSearch" },
-            {
-                data: "Equipe", className: `hide-tipoevento noVis`, name: "Equipe", autoWidth: true, visible: $("#equipante-eventoid-filtro").val() != 999
-            },
-            {
-                data: "Faltas", className: `hide-tipoevento noSearch noVis`, name: "Faltas", visible: $("#equipante-eventoid-filtro").val() != 999
-            },
-            { data: "Congregacao", name: "Congregacao", autoWidth: true, visible: false },
-            {
-                data: "HasOferta", className: `hide-tipoevento noSearch noVis`, name: "HasOferta", autoWidth: true, visible: $("#equipante-eventoid-filtro").val() != 999, render: function (data, type, row) {
-                    if (row.Status == "Em espera") {
-                        return `<span style="font-size:13px" class="text-center label label-default}">Em espera</span>`;
-                    }
-                    return `<span style="font-size:13px" class="text-center label label-${row.HasOferta ? 'primary' : 'warning'}">${row.HasOferta ? 'Pago' : 'Pendente'}</span>`;
-                }
+                data: "Nome", name: "Nome", autoWidth: true
             },
             {
                 data: "Id", name: "Id", orderable: false, width: "20%", className: 'noVis noSearch',
                 "render": function (data, type, row) {
                     return `   
 
-<form enctype="multipart/form-data" id="frm-vacina${data}" method="post" novalidate="novalidate">
-${GetAnexosButton('Anexos', data, row.QtdAnexos)}
-                                ${!row.HasFoto ? ` <label for="foto${data}" class="inputFile">
-                                <span style="font-size:18px" class="text-mutted pointer p-l-xs"><i class="fa fa-camera" aria-hidden="true" title="Foto"></i></span>
-                                <input accept="image/*" onchange='Foto(${JSON.stringify(row)})' style="display: none;" class="custom-file-input inputFile" id="foto${data}" name="foto${data}" type="file" value="">
-                            </label>`: `<span style="font-size:18px" class="text-success p-l-xs pointer" onclick="toggleFoto(${data})"><i class="fa fa-camera" aria-hidden="true" title="Foto"></i></span>`
-                        }
-                           ${GetButton('GetHistorico', data, 'green', 'fas fa-history', 'Histórico')}
-          ${GetIconWhatsApp(row.Fone)}
-                            ${GetIconTel(row.Fone)}
-                            ${$("#equipante-eventoid-filtro").val() != 999 ? GetButton('Pagamentos', JSON.stringify(row), 'verde', 'far fa-money-bill-alt', 'Pagamentos') : ""}
-                            ${$("#equipante-eventoid-filtro").val() != 999 ? GetButton('EditEquipante', data, 'blue', 'fa-edit', 'Editar') : ""}
-${$("#equipante-eventoid-filtro").val() != 999 ? GetButton('Opcoes', JSON.stringify(row), 'cinza', 'fas fa-info-circle', 'Opções') : ""}
+                             
+                            ${GetButton('EditEquipante', data, 'blue', 'fa-edit', 'Editar')}
                             ${GetButton('DeleteEquipante', data, 'red', 'fa-trash', 'Excluir')}
-                        </form> 
 `;
                 }
             }
         ],
         order: [
-            [2, "asc"]
+            [0, "asc"]
         ],
-        drawCallback: function () {
-            $('.i-checks-green').iCheck({
-                checkboxClass: 'icheckbox_square-green',
-                radioClass: 'iradio_square-green'
-            });
-            $('.i-checks-green').on('ifToggled', function (event) {
-                checkBulkActions()
-            });
-            $('#select-all').on('ifClicked', function (event) {
-                $('.i-checks-green').iCheck($('#select-all').iCheck('update')[0].checked ? 'uncheck' : 'check')
-            });
-            if (callbackFunction) {
-                callbackFunction()
-            }
-            if ($("#equipante-eventoid-filtro").val() != 999) {
-                $('.hide-tipoevento').removeClass('d-none')
-            } else {
-                $('.hide-tipoevento').addClass('d-none')
-            }
-
-            changeEvento = false
-            var idx = 0
-            var api = this.api()
-            api
-                .columns()
-                .every(function (colIdx) {
-                    var column = this;
-                    if (!$(column.header()).hasClass('noSearch')) {
-                        var input = $($($($(column.header()).parents('thead').find('tr')[1]).find('th')[idx]).find('input'))
-                            .on('change keyup clear', _.debounce(function () {
-                                if (column.search() !== this.value) {
-                                    column.search(this.value).draw();
-                                }
-                            }, 500))
-
-                        if (oldEventoId != newEventoId) {
-                            input.val(api.state().columns[colIdx].search.search)
-                            changeEvento = true
-                        }
-
-
-                    }
-                    if (column.visible()) {
-                        idx++
-                    }
-
-                });
-            if (changeEvento) {
-                oldEventoId = newEventoId
-            }
-            newEventoId = $("#equipante-eventoid-filtro").val()
-        },
         ajax: {
             url: '/Equipante/GetEquipantesDataTable',
-            data: getFiltros(),
             datatype: "json",
             type: "POST"
         }
     };
 
-    tableEquipanteConfig.buttons.forEach(function (o) {
-        if (o.extend === "excel") {
-
-            o.action = function (e, dt, button, config) {
-                var div = document.createElement("div");
-                selected = false
-                first = false
-                div.innerHTML = `<div class="checkbox i-checks-green"  style="margin-left:20px;text-align:left">
-<div class="row">
-<div class="col-md-6 col-xs-12">
-<label style="display:block"> <input id="select-all" type="checkbox" onChange="selectAll()" value="all"> Selecionar Todos <i></i></label>
-<label style="display:${$('#equipante-nome').length > 0 ? 'block' : 'none'}"> <input id="campos-excel" class="campos-excel" type="checkbox" value="Nome"> Nome <i></i></label>
-<label style="display:${$('#equipante-apelido').length > 0 ? 'block' : 'none'}"> <input id="campos-excel" class="campos-excel" type="checkbox" value="Apelido"> Apelido <i></i></label>
-<label style="display:${$('#equipante-data-nascimento').length > 0 ? 'block' : 'none'}"> <input id="campos-excel" class="campos-excel" type="checkbox" value="DataNascimento"> Data de Nascimento <i></i></label>
-<label style="display:${$('#equipante-data-nascimento').length > 0 ? 'block' : 'none'}"> <input id="campos-excel" class="campos-excel" type="checkbox" value="Idade"> Idade <i></i></label>
-<label style="display:${$('#equipante-sexo').length > 0 ? 'block' : 'none'}"> <input id="campos-excel" class="campos-excel" type="checkbox" value="Sexo"> Sexo <i></i></label>
-<label style="display:${$('#equipante-email').length > 0 ? 'block' : 'none'}"> <input id="campos-excel" class="campos-excel" type="checkbox" value="Email"> Email <i></i></label>
-<label style="display:${$('#equipante-fone').length > 0 ? 'block' : 'none'}"> <input id="campos-excel" class="campos-excel" type="checkbox" value="Fone"> Fone <i></i></label>
-<label style="display:${$('#equipante-conjuge').length > 0 ? 'block' : 'none'}"> <input id="campos-excel" class="campos-excel" type="checkbox" value="Conjuge"> Cônjuge <i></i></label>
-<label style="display:${$('#equipante-instagram').length > 0 ? 'block' : 'none'}"> <input id="campos-excel" class="campos-excel" type="checkbox" value="Instagram"> Instagram <i></i></label>
-<label style="display:${$('#equipante-camisa').length > 0 ? 'block' : 'none'}"> <input id="campos-excel" class="campos-excel" type="checkbox" value="Camisa"> Tamanho da Camisa <i></i></label>
-<label style="display:${$('#equipante-cep').length > 0 ? 'block' : 'none'}"> <input id="campos-excel" class="campos-excel" type="checkbox" value="CEP"> CEP <i></i></label>
-<label style="display:${$('#equipante-logradouro').length > 0 ? 'block' : 'none'}"> <input id="campos-excel" class="campos-excel" type="checkbox" value="Logradouro"> Logradouro <i></i></label>
-<label style="display:${$('#equipante-bairro').length > 0 ? 'block' : 'none'}"> <input id="campos-excel" class="campos-excel" type="checkbox" value="Bairro"> Bairro <i></i></label>
-<label style="display:${$('#equipante-cidade').length > 0 ? 'block' : 'none'}"> <input id="campos-excel" class="campos-excel" type="checkbox" value="Cidade"> Cidade <i></i></label>
-<label style="display:${$('#equipante-estado').length > 0 ? 'block' : 'none'}"> <input id="campos-excel" class="campos-excel" type="checkbox" value="Estado"> Estado <i></i></label>
-<label style="display:${$('#equipante-numero').length > 0 ? 'block' : 'none'}"> <input id="campos-excel" class="campos-excel" type="checkbox" value="Numero"> Número <i></i></label>
-<label style="display:${$('#equipante-complemento').length > 0 ? 'block' : 'none'}"> <input id="campos-excel" class="campos-excel" type="checkbox" value="Complemento"> Complemento <i></i></label>
-<label style="display:${$('#equipante-referencia').length > 0 ? 'block' : 'none'}"> <input id="campos-excel" class="campos-excel" type="checkbox" value="Referencia"> Referência <i></i></label>
-<label style="display:${$('#equipante-parente').length > 0 ? 'block' : 'none'}"> <input id="campos-excel" class="campos-excel" type="checkbox" value="Parente"> Parente <i></i></label>
-</div>
-<div class="col-md-6 col-xs-12">
-<label style="display:${$('#equipante-nomepai').length > 0 ? 'block' : 'none'}"> <input id="campos-excel" class="campos-excel" type="checkbox" value="NomePai"> Nome do Pai <i></i></label>
-<label style="display:${$('#equipante-fonepa').length > 0 ? 'block' : 'none'}"> <input id="campos-excel" class="campos-excel" type="checkbox" value="FonePai"> Fone do Pai <i></i></label>
-<label style="display:${$('#equipante-nomemae').length > 0 ? 'block' : 'none'}"> <input id="campos-excel" class="campos-excel" type="checkbox" value="NomeMae"> Nome da Mãe <i></i></label>
-<label style="display:${$('#equipante-fonemae').length > 0 ? 'block' : 'none'}"> <input id="campos-excel" class="campos-excel" type="checkbox" value="FoneMae"> Fone da Mãe <i></i></label>
-<label style="display:${$('#equipante-nomecontato').length > 0 ? 'block' : 'none'}"> <input id="campos-excel" class="campos-excel" type="checkbox" value="NomeContato"> Nome do Contato <i></i></label>
-<label style="display:${$('#equipante-fonecontato').length > 0 ? 'block' : 'none'}"> <input id="campos-excel" class="campos-excel" type="checkbox" value="FoneContato"> Fone do Contato <i></i></label>
-<label style="display:${$('#equipante-nomeconvite').length > 0 ? 'block' : 'none'}"> <input id="campos-excel" class="campos-excel" type="checkbox" value="NomeConvite"> Nome de quem Convidou <i></i></label>
-<label style="display:${$('#equipante-foneconvite').length > 0 ? 'block' : 'none'}"> <input id="campos-excel" class="campos-excel" type="checkbox" value="FoneConvite"> Fone de quem Convidou <i></i></label>
-<label style="display:${$('#has-restricaoalimentar').length > 0 ? 'block' : 'none'}"> <input id="campos-excel" class="campos-excel" type="checkbox" value="RestricaoAlimentar"> Restrição Alimentar <i></i></label>
-<label style="display:${$('#has-medicacao').length > 0 ? 'block' : 'none'}"> <input id="campos-excel" class="campos-excel" type="checkbox" value="Medicacao"> Medicação<i></i></label>
-<label style="display:${$('#has-convenio').length > 0 ? 'block' : 'none'}"> <input id="campos-excel" class="campos-excel" type="checkbox" value="Convenio"> Convênio <i></i></label>
-<label style="display:${$('#has-convenio').length > 0 ? 'block' : 'none'}"> <input id="campos-excel" class="campos-excel" type="checkbox" value="Hospitais"> Hospitais <i></i></label>
-<label style="display:${$('#is-casado').length > 0 ? 'block' : 'none'}"> <input id="campos-excel" class="campos-excel" type="checkbox" value="DataCasamento"> Data de Casamento <i></i></label>
-<label style="display:${$('.congregacao').length > 0 ? 'block' : 'none'}"> <input id="campos-excel" class="campos-excel" type="checkbox" value="Congregacao"> Congregação <i></i></label>
-<label style="display:block"> <input id="campos-excel" class="campos-excel" type="checkbox" value="Situacao"> Situação <i></i></label>
-<label style="display:block"> <input id="campos-excel" class="campos-excel" type="checkbox" value="Equipe"> Equipe <i></i></label>
-<label style="display:block"> <input id="campos-excel" class="campos-excel" type="checkbox" value="Quarto"> Quarto <i></i></label>
-</div>
-</div>
-</div>`;
-                CustomSwal({
-                    title: "Excel de Equipantes",
-                    icon: "logo",
-                    text: "Escolha os campos que deseja exportar",
-                    content: div,
-                    className: "button-center",
-                    dangerMode: true,
-                    buttons: {
-                        export: {
-                            text: "Exportar",
-                            value: "export",
-                            className: "btn-primary w-150 btn-all"
-                        }
-                    }
-                }).then(res => {
-                    if (res) {
-                        const data = getFiltros()
-                        data.campos = $('#campos-excel:checked').map(function () {
-                            return $(this).val();
-                        }).get().join();
-                        $.post(
-                            tableEquipanteConfig.ajax.url + "?extract=excel",
-                            data,
-                            function (o) {
-                                window.location = `/Equipante/DownloadTempFile?fileName=Equipantes ${$("#equipante-eventoid-filtro option:selected").text()}.xlsx&g=` + o;
-                            }
-                        );
-                    };
-                })
-            }
-        }
-    });
-
     table = $("#table-equipantes").DataTable(tableEquipanteConfig);
 }
 
-function getEquipes() {
-    if ($("#equipante-eventoid-filtro").val() != 999) {
-
-        $.ajax({
-            url: '/Equipe/GetEquipes',
-            datatype: "json",
-            data: { EventoId: $("#equipante-eventoid-filtro").val() },
-            type: "POST",
-            success: (result) => {
-                $("#equipe-select").html(`
-<option value=999>Selecione</option>
-${result.data.map(p => `<option value=${p.Id}>${p.Equipe}</option>`)}
-`)
-                $('#equipe-select').select2();
-            }
-        });
-    } else {
-        $("#equipe-select").html(`
-<option value=999>Selecione</option>`)
-    }
-}
 
 function selectAll() {
     selected = !selected
@@ -797,64 +571,64 @@ function GetEquipante(id) {
 
     $('#has-medicacao').on('ifChecked', function (event) {
         $('.medicacao').removeClass('d-none');
-        $("#equipante-medicacao").addClass('required');
+        $("#equipante-medicacao").addClass('');
     });
 
     $('#not-medicacao').on('ifChecked', function (event) {
         $('.medicacao').addClass('d-none');
-        $("#equipante-medicacao").removeClass('required');
+        $("#equipante-medicacao").removeClass('');
     });
 
     $('#has-convenio').on('ifChecked', function (event) {
         $('.convenio').removeClass('d-none');
-        $("#equipante-convenio").addClass('required');
+        $("#equipante-convenio").addClass('');
     });
 
     $('#not-convenio').on('ifChecked', function (event) {
         $('.convenio').addClass('d-none');
-        $("#equipante-convenio").removeClass('required');
+        $("#equipante-convenio").removeClass('');
     });
 
 
     $('#has-alergia').on('ifChecked', function (event) {
         $('.alergia').removeClass('d-none');
-        $("#equipante-alergia").addClass('required');
+        $("#equipante-alergia").addClass('');
     });
 
     $('#not-alergia').on('ifChecked', function (event) {
         $('.alergia').addClass('d-none');
-        $("#equipante-alergia").removeClass('required');
+        $("#equipante-alergia").removeClass('');
     });
 
     $('#has-restricaoalimentar').on('ifChecked', function (event) {
         $('.restricaoalimentar').removeClass('d-none');
-        $("#equipante-restricaoalimentar").addClass('required');
+        $("#equipante-restricaoalimentar").addClass('');
     });
 
     $('#not-restricaoalimentar').on('ifChecked', function (event) {
         $('.restricaoalimentar').addClass('d-none');
-        $("#equipante-restricaoalimentar").removeClass('required');
+        $("#equipante-restricaoalimentar").removeClass('');
     });
 
 
     $('#has-parente').on('ifChecked', function (event) {
         $('.parente').removeClass('d-none');
-        $("#equipante-parente").addClass('required');
+        $("#equipante-parente").addClass('');
     });
 
     $('#not-parente').on('ifChecked', function (event) {
         $('.parente').addClass('d-none');
-        $("#equipante-parente").removeClass('required');
+        $("#equipante-parente").removeClass('');
     });
 
     $('#is-casado').on('ifChecked', function (event) {
         $('.casado').removeClass('d-none');
-        $("#equipante-data-casamento").addClass('required');
+        $("#equipante-data-casamento").addClass('');
     });
 
     $('#not-casado').on('ifChecked', function (event) {
         $('.casado').addClass('d-none');
-        $("#equipante-data-casamento").removeClass('required');
+        $("#equipante-data-casamento").removeClass('');
     });
 }
 
@@ -1161,19 +935,6 @@ function checkBulkActions() {
     }
 }
 
-async function loadEquipesBulk() {
-    const equipes = await $.ajax({
-        url: '/Equipe/GetEquipes',
-        datatype: "json",
-        data: { EventoId: $("#equipante-eventoid-filtro").val() != 999 ? $("#equipante-eventoid-filtro").val() : $('#equipante-eventoid-bulk').val() },
-        type: "POST"
-    })
-
-    $("#bulk-equipe").html(`
-<option value=999>Selecione</option>
-        ${equipes.data.map(p => `<option value=${p.Id}>${p.Equipe}</option>`)}
-        `)
-}
 
 async function openBulkActions() {
     let ids = getCheckedIds()
@@ -1385,51 +1146,51 @@ function loadCampos(id) {
             campos = data.Campos
             $('.campos-cadastro').html(`
           <input type="hidden" id="equipante-id" />
-${campos.find(x => x.Campo == "Nome e Sobrenome") ? `<div class="col-sm-12 p-w-md m-t-md text-center">
+<div class="col-sm-12 p-w-md m-t-md text-center">
                                 <h5>Nome</h5>
 
                                 <input type="text" class="form-control required" id="equipante-nome" data-field="Nome" />
-                            </div>` : ""}
+                            </div>
 
 ${campos.find(x => x.Campo == "Apelido") ? ` <div class="col-sm-12 p-w-md m-t-md text-center">
                                 <h5>Apelido</h5>
 
-                                <input type="text" class="form-control required" id="equipante-apelido" data-field="Apelido" />
+                                <input type="text" class="form-control " id="equipante-apelido" data-field="Apelido" />
                             </div>` : ""}
-${campos.find(x => x.Campo == 'Data Nascimento') ? `<div class="col-sm-12 p-w-md m-t-md text-center">
+<div class="col-sm-12 p-w-md m-t-md text-center">
                                 <h5>Data de Nascimento</h5>
 
-                                <input type="text" class="form-control full-date required" id="equipante-data-nascimento" data-field="Data de Nascimento" />
-                            </div>` : ''}
+                                <input type="text" class="form-control full-date " id="equipante-data-nascimento" data-field="Data de Nascimento" />
+                            </div>
 ${campos.find(x => x.Campo == 'Gênero') ? `<div class="col-sm-12 p-w-md m-t-md text-center">
                                 <h5>Sexo</h5>
 
                                 <div class="radio i-checks-green inline"><label> <input type="radio" id="equipante-sexo" checked="" value="1" name="equipante-sexo"> <i></i> Masculino </label></div>
                                 <div class="radio i-checks-green inline"><label> <input type="radio" id="equipante-sexo" value="2" name="equipante-sexo"> <i></i> Feminino </label></div>
                             </div>` : ''}
-${campos.find(x => x.Campo == 'Email') ? `<div class="col-sm-12 p-w-md m-t-md text-center">
+<div class="col-sm-12 p-w-md m-t-md text-center">
                                 <h5>Email</h5>
 
-                                <input type="email" class="form-control" id="equipante-email" data-field="Email" />
-                            </div>` : ''}
+                                <input type="email" class="form-control required" id="equipante-email" data-field="Email" />
+                            </div>
 
-${campos.find(x => x.Campo == 'Fone') ? `  <div class="col-sm-12 p-w-md m-t-md text-center">
+ <div class="col-sm-12 p-w-md m-t-md text-center">
                                 <h5>WhatsApp</h5>
 
-                                <input type="text" class="form-control fone" id="equipante-fone" data-field="WhatsApp" placeholder="+55 (81) 9999-9999" />
-                            </div>` : ''}
+                                <input type="text" class="form-control fone required" id="equipante-fone" data-field="WhatsApp" placeholder="+55 (81) 9999-9999" />
+                            </div>
 
 ${campos.find(x => x.Campo == 'Cônjuge') ? `  <div class="col-sm-12 p-w-md m-t-md text-center">
                                 <h5>Cônjuge</h5>
 
-                                <input type="text" class="form-control required" id="equipante-conjuge" data-field="Cônjuge" />
+                                <input type="text" class="form-control " id="equipante-conjuge" data-field="Cônjuge" />
                             </div>` : ''}
 
 
 ${campos.find(x => x.Campo == 'Instagram') ? ` <div class="col-sm-12 p-w-md m-t-md text-center">
                                 <h5>Instagram</h5>
 
-                                <input type="text" class="form-control required" id="equipante-instagram" data-field="Apelido" />
+                                <input type="text" class="form-control " id="equipante-instagram" data-field="Apelido" />
                             </div>` : ''}
 
      ${campos.find(x => x.Campo == 'Camisa') ? `        <div class="col-sm-12 p-w-md m-t-md text-center">
@@ -1452,7 +1213,7 @@ ${campos.find(x => x.Campo == 'Instagram') ? ` <div class="col-sm-12 p-w-md m-t-
 ${campos.find(x => x.Campo == 'Endereço') ? `<div class="col-sm-3 p-w-md m-t-md text-center">
                                 <h5>CEP</h5>
 
-                                <input type="text" class="form-control required cep" id="equipante-cep" data-field="CEP" onkeyup="verificaCep(this)" />
+                                <input type="text" class="form-control  cep" id="equipante-cep" data-field="CEP" onkeyup="verificaCep(this)" />
                                 <input type="hidden" id="equipante-latitude" />
                                 <input type="hidden" id="equipante-longitude" />
                             </div>
@@ -1460,13 +1221,13 @@ ${campos.find(x => x.Campo == 'Endereço') ? `<div class="col-sm-3 p-w-md m-t-md
                             <div class="col-sm-9 p-w-md m-t-md text-center">
                                 <h5>Logradouro</h5>
 
-                                <input type="text" class="form-control required" disabled id="equipante-logradouro" data-field="Logradouro" />
+                                <input type="text" class="form-control " disabled id="equipante-logradouro" data-field="Logradouro" />
                             </div>
 
                             <div class="col-sm-5 p-w-md m-t-md text-center">
                                 <h5>Bairro</h5>
 
-                                <input type="text" class="form-control required" disabled id="equipante-bairro" data-field="Bairro" />
+                                <input type="text" class="form-control " disabled id="equipante-bairro" data-field="Bairro" />
                             </div>
 
                             <div class="col-sm-5 p-w-md m-t-md text-center">
@@ -1474,7 +1235,7 @@ ${campos.find(x => x.Campo == 'Endereço') ? `<div class="col-sm-3 p-w-md m-t-md
                                     Cidade
                                 </h5>
 
-                                <input type="text" class="form-control required" disabled id="equipante-cidade" data-field="Cidade" />
+                                <input type="text" class="form-control " disabled id="equipante-cidade" data-field="Cidade" />
                             </div>
 
                             <div class="col-sm-2 p-w-md m-t-md text-center">
@@ -1482,7 +1243,7 @@ ${campos.find(x => x.Campo == 'Endereço') ? `<div class="col-sm-3 p-w-md m-t-md
                                     Estado
                                 </h5>
 
-                                <input type="text" class="form-control required" disabled id="equipante-estado" data-field="Estado" />
+                                <input type="text" class="form-control " disabled id="equipante-estado" data-field="Estado" />
                             </div>
 
                             <div class="col-sm-4 p-w-md m-t-md text-center">
@@ -1519,7 +1280,7 @@ ${campos.find(x => x.Campo == 'Endereço') ? `<div class="col-sm-3 p-w-md m-t-md
 ${campos.find(x => x.Campo == 'Dados da Mãe') ? ` <div class="col-sm-12 p-w-md m-t-md text-center">
                                 <h5>Nome da Mãe</h5>
 
-                                <input type="text" class="form-control required" id="equipante-nomemae" data-field="Nome da Mã" />
+                                <input type="text" class="form-control " id="equipante-nomemae" data-field="Nome da Mã" />
                             </div>
                             <div class="col-sm-12 p-w-md m-t-md text-center">
                                 <h5>Fone da Mãe</h5>
@@ -1530,7 +1291,7 @@ ${campos.find(x => x.Campo == 'Dados da Mãe') ? ` <div class="col-sm-12 p-w-md 
 ${campos.find(x => x.Campo == 'Dados do Pai') ? `<div class="col-sm-12 p-w-md m-t-md text-center">
                                 <h5>Nome do Pai</h5>
 
-                                <input type="text" class="form-control required" id="equipante-nomepai" data-field="Nome do Pai" />
+                                <input type="text" class="form-control " id="equipante-nomepai" data-field="Nome do Pai" />
                             </div>
                             <div class="col-sm-12 p-w-md m-t-md text-center">
                                 <h5>Fone do Pai</h5>
@@ -1541,7 +1302,7 @@ ${campos.find(x => x.Campo == 'Dados do Pai') ? `<div class="col-sm-12 p-w-md m-
 ${campos.find(x => x.Campo == 'Dados do Contato') ? ` <div class="col-sm-12 p-w-md m-t-md text-center">
                                 <h5>Pessoa de Contato</h5>
 
-                                <input type="text" class="form-control required" id="equipante-nomecontato" data-field="Pessoa de Contato" />
+                                <input type="text" class="form-control " id="equipante-nomecontato" data-field="Pessoa de Contato" />
                             </div>
                             <div class="col-sm-12 p-w-md m-t-md text-center">
                                 <h5>Fone do Contato</h5>
@@ -1552,7 +1313,7 @@ ${campos.find(x => x.Campo == 'Dados do Contato') ? ` <div class="col-sm-12 p-w-
 ${campos.find(x => x.Campo == 'Dados do Convite') ? `<div class="col-sm-12 p-w-md m-t-md text-center">
                                 <h5>Pessoa que Convidou</h5>
 
-                                <input type="text" class="form-control required" id="equipante-nomeconvite" data-field="Pessoa de Convite" />
+                                <input type="text" class="form-control " id="equipante-nomeconvite" data-field="Pessoa de Convite" />
                             </div>
                             <div class="col-sm-12 p-w-md m-t-md text-center">
                                 <h5>Fone de quem convidou</h5>

@@ -113,59 +113,11 @@ ${result.data.map(p => `<option value=${p.Id}>${p.Nome}</option>`)}
                     </div>`
                 }
             },
-            { data: "Apelido", name: "Apelido", autoWidth: true, visible: false },
-            { data: "Conjuge", title: "Cônjuge", name: "Conjuge", autoWidth: true, visible: false },
-            { data: "NomeMae", name: "NomeMae", autoWidth: true, visible: false },
-            { data: "FoneMae", name: "FoneMae", autoWidth: true, visible: false },
-            { data: "NomePai", name: "NomePai", autoWidth: true, visible: false },
-            { data: "FonePai", name: "FonePai", autoWidth: true, visible: false },
-            { data: "NomeContato", name: "NomeContato", autoWidth: true, visible: false },
-            { data: "FoneContato", name: "FoneContato", autoWidth: true, visible: false },
-            { data: "NomeConvite", name: "NomeConvite", autoWidth: true, visible: false },
-            { data: "FoneConvite", name: "FoneConvite", autoWidth: true, visible: false },
             { data: "Idade", name: "Idade", width: "5%", },
-            { data: "Padrinho", name: "Padrinho", width: "25%" },
-            {
-                data: "Status", name: "Status", width: "5%", render: function (data, type, row) {
-                    if (row.Checkin) {
-                        data = "Presente";
-                        cor = "warning";
-                    }
-                    else if (data === Confirmado)
-                        cor = "primary";
-                    else if (data === Cancelado)
-                        cor = "danger";
-                    else if (data === Inscrito)
-                        cor = "success";
-                    else if (data === Espera)
-                        cor = "default";
-                    return `<span style="font-size:13px" class="text-center label label-${cor}">${data}</span>`;
-                }
-            },
-            { data: "Email", title: "Email", name: "Email", autoWidth: true, visible: false },
-            { data: "CEP", title: "CEP", name: "CEP", autoWidth: true, visible: false },
-            { data: "Logradouro", title: "Logradouro", name: "Logradouro", autoWidth: true, visible: false },
-            { data: "Bairro", title: "Bairro", name: "Bairro", autoWidth: true, visible: false },
-            { data: "Cidade", title: "Cidade", name: "Cidade", autoWidth: true, visible: false },
-            { data: "Estado", title: "Estado", name: "Estado", autoWidth: true, visible: false },
-            { data: "Numero", title: "Numero", name: "Numero", autoWidth: true, visible: false },
-
-            { data: "Complemento", title: "Complemento", name: "Complemento", autoWidth: true, visible: false },
-            { data: "Referencia", title: "Referência", name: "Referencia", autoWidth: true, visible: false },
-            { data: "RestricaoAlimentar", title: "Restrição Alimentar", name: "RestricaoAlimentar", autoWidth: true, visible: false },
-            { data: "Medicacao", title: "Medicação", name: "Medicacao", autoWidth: true, visible: false },
-            { data: "Convenio", title: "Convênio", name: "Convenio", autoWidth: true, visible: false },
-            { data: "DataCasamento", title: "Data de Casamento", name: "DataCasamento", autoWidth: true, visible: false },
-            { data: "Hospitais", title: "Hospitais", name: "Hospitais", autoWidth: true, visible: false },
-            { data: "Parente", title: "Parente", name: "Parente", autoWidth: true, visible: false },
-            { data: "Quarto", title: "Quarto", name: "Quarto", autoWidth: true, visible: false },
-            { data: "DataCadastro", visible: false, title: "Data Inscrição", name: "DataCadastro", autoWidth: true },
             {
                 data: "Id", name: "Id", orderable: false, width: "25%", className: 'noVis',
                 "render": function (data, type, row) {
-                    return row.Status != Cancelado && row.Status != Espera ?
-
-                        `<form enctype="multipart/form-data" id="frm-vacina${data}" method="post" novalidate="novalidate">
+                    return `<form enctype="multipart/form-data" id="frm-vacina${data}" method="post" novalidate="novalidate">
 ${GetButton('Pagamentos', JSON.stringify(row), 'verde', 'far fa-money-bill-alt', 'Pagamentos')}
                                             
                         ${!row.HasFoto ? ` <label for="foto${data}" class="inputFile">
@@ -174,13 +126,12 @@ ${GetButton('Pagamentos', JSON.stringify(row), 'verde', 'far fa-money-bill-alt',
                             </label>`: `<span style="font-size:18px" class="text-success p-l-xs pointer" onclick="toggleFoto(${data})"><i class="fa fa-camera" aria-hidden="true" title="Foto"></i></span>`
                         }
                             ${GetAnexosButton('Anexos', data, row.QtdAnexos)}
-                            ${GetIconWhatsApp(row.Fone)}
+                            
                             ${GetButton('EditParticipante', data, 'blue', 'fa-edit', 'Editar')}                               
                             ${GetButton('Opcoes', JSON.stringify(row), 'cinza', 'fas fa-info-circle', 'Opções')}                            
-                            ${GetButton('CancelarInscricao', JSON.stringify(row), 'red', 'fa-times', 'Cancelar Inscrição')}
                     </form>`
-                        : `${isAdm ? ` ${GetLabel('AtivarInscricao', JSON.stringify(row), 'green', 'Ativar Inscrição')}
-${row.Status == Cancelado ? GetLabel('DeletarInscricao', JSON.stringify(row), 'red', 'Deletar Inscrição') : ''}` : ''}`
+                    //${GetButton('CancelarInscricao', JSON.stringify(row), 'red', 'fa-times', 'Cancelar Inscrição')}
+                    //${ GetIconWhatsApp(row.Fone) }
                 }
             }
         ],
@@ -214,45 +165,17 @@ ${row.Status == Cancelado ? GetLabel('DeletarInscricao', JSON.stringify(row), 'r
 <div class="col-md-6 col-xs-12">
 <label style="display:block"> <input id="select-all" type="checkbox" onChange="selectAll()" value="all"> Selecionar Todos <i></i></label>
 <label style="display:${$('#participante-nome').length > 0 ? 'block' : 'none'}"> <input id="campos-excel" class="campos-excel" type="checkbox" value="Nome"> Nome <i></i></label>
-<label style="display:${$('#participante-apelido').length > 0 ? 'block' : 'none'}"> <input id="campos-excel" class="campos-excel" type="checkbox" value="Apelido"> Apelido <i></i></label>
 <label style="display:${$('#participante-datanascimento').length > 0 ? 'block' : 'none'}"> <input id="campos-excel" class="campos-excel" type="checkbox" value="DataNascimento"> Data de Nascimento <i></i></label>
 <label style="display:${$('#participante-datanascimento').length > 0 ? 'block' : 'none'}"> <input id="campos-excel" class="campos-excel" type="checkbox" value="Idade"> Idade <i></i></label>
 <label style="display:${$('#participante-sexo').length > 0 ? 'block' : 'none'}"> <input id="campos-excel" class="campos-excel" type="checkbox" value="Sexo"> Sexo <i></i></label>
 <label style="display:${$('#participante-email').length > 0 ? 'block' : 'none'}"> <input id="campos-excel" class="campos-excel" type="checkbox" value="Email"> Email <i></i></label>
 <label style="display:${$('#participante-fone').length > 0 ? 'block' : 'none'}"> <input id="campos-excel" class="campos-excel" type="checkbox" value="Fone"> Fone <i></i></label>
-<label style="display:${$('#participante-conjuge').length > 0 ? 'block' : 'none'}"> <input id="campos-excel" class="campos-excel" type="checkbox" value="Conjuge"> Cônjuge <i></i></label>
-<label style="display:${$('#participante-instagram').length > 0 ? 'block' : 'none'}"> <input id="campos-excel" class="campos-excel" type="checkbox" value="Instagram"> Instagram <i></i></label>
-<label style="display:${$('#participante-camisa').length > 0 ? 'block' : 'none'}"> <input id="campos-excel" class="campos-excel" type="checkbox" value="Camisa"> Tamanho da Camisa <i></i></label>
-<label style="display:${$('#participante-cep').length > 0 ? 'block' : 'none'}"> <input id="campos-excel" class="campos-excel" type="checkbox" value="CEP"> CEP <i></i></label>
-<label style="display:${$('#participante-logradouro').length > 0 ? 'block' : 'none'}"> <input id="campos-excel" class="campos-excel" type="checkbox" value="Logradouro"> Logradouro <i></i></label>
-<label style="display:${$('#participante-bairro').length > 0 ? 'block' : 'none'}"> <input id="campos-excel" class="campos-excel" type="checkbox" value="Bairro"> Bairro <i></i></label>
-<label style="display:${$('#participante-cidade').length > 0 ? 'block' : 'none'}"> <input id="campos-excel" class="campos-excel" type="checkbox" value="Cidade"> Cidade <i></i></label>
-<label style="display:${$('#participante-estado').length > 0 ? 'block' : 'none'}"> <input id="campos-excel" class="campos-excel" type="checkbox" value="Estado"> Estado <i></i></label>
-<label style="display:${$('#participante-numero').length > 0 ? 'block' : 'none'}"> <input id="campos-excel" class="campos-excel" type="checkbox" value="Numero"> Número <i></i></label>
-<label style="display:${$('#participante-complemento').length > 0 ? 'block' : 'none'}"> <input id="campos-excel" class="campos-excel" type="checkbox" value="Complemento"> Complemento <i></i></label>
-<label style="display:${$('#participante-referencia').length > 0 ? 'block' : 'none'}"> <input id="campos-excel" class="campos-excel" type="checkbox" value="Referencia"> Referência <i></i></label>
-<label style="display:${$('#participante-parente').length > 0 ? 'block' : 'none'}"> <input id="campos-excel" class="campos-excel" type="checkbox" value="Parente"> Parente <i></i></label>
 </div>
 <div class="col-md-6 col-xs-12">
-<label style="display:${$('#participante-nomepai').length > 0 ? 'block' : 'none'}"> <input id="campos-excel" class="campos-excel" type="checkbox" value="NomePai"> Nome do Pai <i></i></label>
-<label style="display:${$('#participante-fonepa').length > 0 ? 'block' : 'none'}"> <input id="campos-excel" class="campos-excel" type="checkbox" value="FonePai"> Fone do Pai <i></i></label>
-<label style="display:${$('#participante-nomemae').length > 0 ? 'block' : 'none'}"> <input id="campos-excel" class="campos-excel" type="checkbox" value="NomeMae"> Nome da Mãe <i></i></label>
-<label style="display:${$('#participante-fonemae').length > 0 ? 'block' : 'none'}"> <input id="campos-excel" class="campos-excel" type="checkbox" value="FoneMae"> Fone da Mãe <i></i></label>
 <label style="display:${$('#participante-nomecontato').length > 0 ? 'block' : 'none'}"> <input id="campos-excel" class="campos-excel" type="checkbox" value="NomeContato"> Nome do Contato <i></i></label>
 <label style="display:${$('#participante-fonecontato').length > 0 ? 'block' : 'none'}"> <input id="campos-excel" class="campos-excel" type="checkbox" value="FoneContato"> Fone do Contato <i></i></label>
-<label style="display:${$('#participante-nomeconvite').length > 0 ? 'block' : 'none'}"> <input id="campos-excel" class="campos-excel" type="checkbox" value="NomeConvite"> Nome de quem Convidou <i></i></label>
-<label style="display:${$('#participante-foneconvite').length > 0 ? 'block' : 'none'}"> <input id="campos-excel" class="campos-excel" type="checkbox" value="FoneConvite"> Fone de quem Convidou <i></i></label>
-<label style="display:${$('#has-restricaoalimentar').length > 0 ? 'block' : 'none'}"> <input id="campos-excel" class="campos-excel" type="checkbox" value="RestricaoAlimentar"> Restrição Alimentar <i></i></label>
 <label style="display:${$('#has-medicacao').length > 0 ? 'block' : 'none'}"> <input id="campos-excel" class="campos-excel" type="checkbox" value="Medicacao"> Medicação<i></i></label>
-<label style="display:${$('#has-convenio').length > 0 ? 'block' : 'none'}"> <input id="campos-excel" class="campos-excel" type="checkbox" value="Convenio"> Convênio <i></i></label>
-<label style="display:${$('#has-convenio').length > 0 ? 'block' : 'none'}"> <input id="campos-excel" class="campos-excel" type="checkbox" value="Hospitais"> Hospitais <i></i></label>
-<label style="display:${$('#is-casado').length > 0 ? 'block' : 'none'}"> <input id="campos-excel" class="campos-excel" type="checkbox" value="DataCasamento"> Data de Casamento <i></i></label>
 <label style="display:${$('.congregacao').length > 0 ? 'block' : 'none'}"> <input id="campos-excel" class="campos-excel" type="checkbox" value="Congregacao"> Congregação <i></i></label>
-<label style="display:block"> <input id="campos-excel" class="campos-excel" type="checkbox" value="Situacao"> Situação <i></i></label>
-<label style="display:block"> <input id="campos-excel" class="campos-excel" type="checkbox" value="Circulo"> Círculo <i></i></label>
-<label style="display:block"> <input id="campos-excel" class="campos-excel" type="checkbox" value="Quarto"> Quarto <i></i></label>
-<label style="display:block"> <input id="campos-excel" class="campos-excel" type="checkbox" value="Motorista"> Motorista <i></i></label>
-<label style="display:block"> <input id="campos-excel" class="campos-excel" type="checkbox" value="DataCadastro"> Data/Hora Inscrição <i></i></label>
 </div>
 </div>
 </div>`;
@@ -1078,6 +1001,10 @@ function GetParticipante(id) {
                 $(`#participante-numero`).val(data.Participante.Numero);
                 $(`#participante-complemento`).val(data.Participante.Complemento);
                 $(`#participante-conjuge`).val(data.Participante.Conjuge);
+                $(`#participante-estadocivil`).val(data.Participante.EstadoCivil);
+                $(`#participante-RG`).val(data.Participante.RG);
+                $(`#participante-CPF`).val(data.Participante.CPF);
+                $(`#participante-escolaridade`).val(data.Participante.Escolaridade);
                 $(`#participante-referencia`).val(data.Participante.Referencia);
 
                 $(`#participante-latitude`).val((data.Participante.Latitude || '').replaceAll(',', '.'));
@@ -1118,6 +1045,10 @@ function GetParticipante(id) {
         $(`#participante-numero`).val('');
         $(`#participante-complemento`).val('');
         $(`#participante-conjuge`).val('');
+        $(`#participante-estadocivil`).val('');
+        $(`#participante-RG`).val('');
+        $(`#participante-CPF`).val('');
+        $(`#participante-escolaridade`).val('');
         $(`#participante-referencia`).val('');
         $(`input[type=radio][name=participante-sexo][value=1]`).iCheck('check');
         $(`input[type=radio][name=participante-iscasado][value=false]`).iCheck('check');
@@ -1131,64 +1062,52 @@ function GetParticipante(id) {
 
     $('#has-medicacao').on('ifChecked', function (event) {
         $('.medicacao').removeClass('d-none');
-        $("#participante-medicacao").addClass('required');
     });
 
     $('#not-medicacao').on('ifChecked', function (event) {
         $('.medicacao').addClass('d-none');
-        $("#participante-medicacao").removeClass('required');
     });
 
     $('#has-convenio').on('ifChecked', function (event) {
         $('.convenio').removeClass('d-none');
-        $("#participante-convenio").addClass('required');
     });
 
     $('#not-convenio').on('ifChecked', function (event) {
         $('.convenio').addClass('d-none');
-        $("#participante-convenio").removeClass('required');
     });
 
 
     $('#has-alergia').on('ifChecked', function (event) {
         $('.alergia').removeClass('d-none');
-        $("#participante-alergia").addClass('required');
     });
 
     $('#not-alergia').on('ifChecked', function (event) {
         $('.alergia').addClass('d-none');
-        $("#participante-alergia").removeClass('required');
     });
 
     $('#has-restricaoalimentar').on('ifChecked', function (event) {
         $('.restricaoalimentar').removeClass('d-none');
-        $("#participante-restricaoalimentar").addClass('required');
     });
 
     $('#not-restricaoalimentar').on('ifChecked', function (event) {
         $('.restricaoalimentar').addClass('d-none');
-        $("#participante-restricaoalimentar").removeClass('required');
     });
 
 
     $('#has-parente').on('ifChecked', function (event) {
         $('.parente').removeClass('d-none');
-        $("#participante-parente").addClass('required');
     });
 
     $('#not-parente').on('ifChecked', function (event) {
         $('.parente').addClass('d-none');
-        $("#participante-parente").removeClass('required');
     });
 
     $('#is-casado').on('ifChecked', function (event) {
         $('.casado').removeClass('d-none');
-        $("#participante-data-casamento").addClass('required');
     });
 
     $('#not-casado').on('ifChecked', function (event) {
         $('.casado').addClass('d-none');
-        $("#participante-data-casamento").removeClass('required');
     });
 }
 
@@ -1232,6 +1151,10 @@ function PostParticipante() {
                     Numero: $(`#participante-numero`).val(),
                     Complemento: $(`#participante-complemento`).val(),
                     Conjuge: $(`#participante-conjuge`).val(),
+                    EstadoCivil: $(`#participante-estadocivil`).val(),
+                    RG: $(`#participante-RG`).val(),
+                    CPF: $(`#participante-CPF`).val(),
+                    Escolaridade: $(`#participante-escolaridade`).val(),
                     Referencia: $(`#participante-referencia`).val(),
                     Latitude: $(`#participante-latitude`).val(),
                     Longitude: $(`#participante-longitude`).val(),
@@ -1408,46 +1331,67 @@ function loadCampos(id) {
 display:none;
     max-height: 100px;        margin: 20px auto auto auto;" src="">
  </div>
-${campos.find(x => x.Campo == "Nome e Sobrenome") ? `<div class="col-sm-12 p-w-md m-t-md text-center">
+<div class="col-sm-12 p-w-md m-t-md text-center">
                                 <h5>Nome</h5>
 
-                                <input type="text" class="form-control required" id="participante-nome" data-field="Nome" />
-                            </div>` : ""}
+                                <input type="text" class="form-control " id="participante-nome" data-field="Nome" />
+                            </div>
 
 ${campos.find(x => x.Campo == "Apelido") ? ` <div class="col-sm-12 p-w-md m-t-md text-center">
                                 <h5>Apelido</h5>
 
-                                <input type="text" class="form-control required" id="participante-apelido" data-field="Apelido" />
+                                <input type="text" class="form-control " id="participante-apelido" data-field="Apelido" />
                             </div>` : ""}
-${campos.find(x => x.Campo == 'Data Nascimento') ? `<div class="col-sm-12 p-w-md m-t-md text-center">
+<div class="col-sm-12 p-w-md m-t-md text-center">
                                 <h5>Data de Nascimento</h5>
 
-                                <input type="text" class="form-control full-date required" id="participante-data-nascimento" data-field="Data de Nascimento" />
-                            </div>` : ''}
-${campos.find(x => x.Campo == 'Gênero') ? `<div class="col-sm-12 p-w-md m-t-md text-center">
+                                <input type="text" class="form-control full-date " id="participante-data-nascimento" data-field="Data de Nascimento" />
+                            </div>
+<div class="col-sm-12 p-w-md m-t-md text-center">
                                 <h5>Sexo</h5>
 
                                 <div class="radio i-checks-green inline"><label> <input type="radio" id="participante-sexo" checked="" value="1" name="participante-sexo"> <i></i> Masculino </label></div>
                                 <div class="radio i-checks-green inline"><label> <input type="radio" id="participante-sexo" value="2" name="participante-sexo"> <i></i> Feminino </label></div>
-                            </div>` : ''}
-${campos.find(x => x.Campo == 'Email') ? `<div class="col-sm-12 p-w-md m-t-md text-center">
+                            </div>
+<div class="col-sm-12 p-w-md m-t-md text-center">
                                 <h5>Email</h5>
 
                                 <input type="email" class="form-control" id="participante-email" data-field="Email" />
-                            </div>` : ''}
-
-${campos.find(x => x.Campo == 'Fone') ? `  <div class="col-sm-12 p-w-md m-t-md text-center">
+                            </div>  <div class="col-sm-12 p-w-md m-t-md text-center">
                                 <h5>WhatsApp</h5>
 
                                 <input type="text" class="form-control fone" id="participante-fone" data-field="WhatsApp" placeholder="+55 (81) 9999-9999" />
-                            </div>` : ''}
+                            </div>
 
 ${campos.find(x => x.Campo == 'Cônjuge') ? `  <div class="col-sm-12 p-w-md m-t-md text-center">
                                 <h5>Cônjuge</h5>
 
-                                <input type="text" class="form-control required" id="participante-conjuge" data-field="Cônjuge" />
+                                <input type="text" class="form-control " id="participante-conjuge" data-field="Cônjuge" />
                             </div>` : ''}
 
+<div class="col-sm-12 p-w-md m-t-md text-center">
+                                <h5>RG</h5>
+
+                                <input type="text" class="form-control " id="participante-RG" data-field="RG" />
+                            </div>
+
+<div class="col-sm-12 p-w-md m-t-md text-center">
+                                <h5>CPF</h5>
+
+                                <input type="text" class="form-control " id="participante-CPF" data-field="CPF" />
+                            </div>
+
+<div class="col-sm-12 p-w-md m-t-md text-center">
+                                <h5>Estado Civil</h5>
+
+                                <input type="text" class="form-control " id="participante-estadocivil" data-field="Estado Civil" />
+                            </div>
+
+<div class="col-sm-12 p-w-md m-t-md text-center">
+                                <h5>Escolaridade</h5>
+
+                                <input type="text" class="form-control " id="participante-escolaridade" data-field="Escolaridade" />
+                            </div>
 
 ${campos.find(x => x.Campo == 'Instagram') ? ` <div class="col-sm-12 p-w-md m-t-md text-center">
                                 <h5>Instagram</h5>
@@ -1475,7 +1419,7 @@ ${campos.find(x => x.Campo == 'Instagram') ? ` <div class="col-sm-12 p-w-md m-t-
 ${campos.find(x => x.Campo == 'Endereço') ? `<div class="col-sm-3 p-w-md m-t-md text-center">
                                 <h5>CEP</h5>
 
-                                <input type="text" class="form-control required cep" id="participante-cep" data-field="CEP" onkeyup="verificaCep(this)" />
+                                <input type="text" class="form-control  cep" id="participante-cep" data-field="CEP" onkeyup="verificaCep(this)" />
                                 <input type="hidden" id="participante-latitude" />
                                 <input type="hidden" id="participante-longitude" />
                             </div>
@@ -1483,13 +1427,13 @@ ${campos.find(x => x.Campo == 'Endereço') ? `<div class="col-sm-3 p-w-md m-t-md
                             <div class="col-sm-9 p-w-md m-t-md text-center">
                                 <h5>Logradouro</h5>
 
-                                <input type="text" class="form-control required" disabled id="participante-logradouro" data-field="Logradouro" />
+                                <input type="text" class="form-control " disabled id="participante-logradouro" data-field="Logradouro" />
                             </div>
 
                             <div class="col-sm-5 p-w-md m-t-md text-center">
                                 <h5>Bairro</h5>
 
-                                <input type="text" class="form-control required" disabled id="participante-bairro" data-field="Bairro" />
+                                <input type="text" class="form-control " disabled id="participante-bairro" data-field="Bairro" />
                             </div>
 
                             <div class="col-sm-5 p-w-md m-t-md text-center">
@@ -1497,7 +1441,7 @@ ${campos.find(x => x.Campo == 'Endereço') ? `<div class="col-sm-3 p-w-md m-t-md
                                     Cidade
                                 </h5>
 
-                                <input type="text" class="form-control required" disabled id="participante-cidade" data-field="Cidade" />
+                                <input type="text" class="form-control " disabled id="participante-cidade" data-field="Cidade" />
                             </div>
 
                             <div class="col-sm-2 p-w-md m-t-md text-center">
@@ -1505,7 +1449,7 @@ ${campos.find(x => x.Campo == 'Endereço') ? `<div class="col-sm-3 p-w-md m-t-md
                                     Estado
                                 </h5>
 
-                                <input type="text" class="form-control required" disabled id="participante-estado" data-field="Estado" />
+                                <input type="text" class="form-control " disabled id="participante-estado" data-field="Estado" />
                             </div>
 
                             <div class="col-sm-4 p-w-md m-t-md text-center">
@@ -1542,7 +1486,7 @@ ${campos.find(x => x.Campo == 'Endereço') ? `<div class="col-sm-3 p-w-md m-t-md
 ${campos.find(x => x.Campo == 'Dados da Mãe') ? ` <div class="col-sm-12 p-w-md m-t-md text-center">
                                 <h5>Nome da Mãe</h5>
 
-                                <input type="text" class="form-control required" id="participante-nomemae" data-field="Nome da Mã" />
+                                <input type="text" class="form-control " id="participante-nomemae" data-field="Nome da Mã" />
                             </div>
                             <div class="col-sm-12 p-w-md m-t-md text-center">
                                 <h5>Fone da Mãe</h5>
@@ -1553,29 +1497,28 @@ ${campos.find(x => x.Campo == 'Dados da Mãe') ? ` <div class="col-sm-12 p-w-md 
 ${campos.find(x => x.Campo == 'Dados do Pai') ? `<div class="col-sm-12 p-w-md m-t-md text-center">
                                 <h5>Nome do Pai</h5>
 
-                                <input type="text" class="form-control required" id="participante-nomepai" data-field="Nome do Pai" />
+                                <input type="text" class="form-control " id="participante-nomepai" data-field="Nome do Pai" />
                             </div>
                             <div class="col-sm-12 p-w-md m-t-md text-center">
                                 <h5>Fone do Pai</h5>
 
                                 <input type="text" class="form-control fone" id="participante-fonepai" data-field="Fone do Pai" placeholder="+55 (81) 9999-9999" />
                             </div>` : ''}
-
-${campos.find(x => x.Campo == 'Dados do Contato') ? ` <div class="col-sm-12 p-w-md m-t-md text-center">
+ <div class="col-sm-12 p-w-md m-t-md text-center">
                                 <h5>Pessoa de Contato</h5>
 
-                                <input type="text" class="form-control required" id="participante-nomecontato" data-field="Pessoa de Contato" />
+                                <input type="text" class="form-control " id="participante-nomecontato" data-field="Pessoa de Contato" />
                             </div>
                             <div class="col-sm-12 p-w-md m-t-md text-center">
                                 <h5>Fone do Contato</h5>
 
                                 <input type="text" class="form-control fone" id="participante-fonecontato" data-field="Fone do Contato" placeholder="+55 (81) 9999-9999" />
-                            </div>` : ''}
+                            </div>
 
 ${campos.find(x => x.Campo == 'Dados do Convite') ? `<div class="col-sm-12 p-w-md m-t-md text-center">
                                 <h5>Pessoa que Convidou</h5>
 
-                                <input type="text" class="form-control required" id="participante-nomeconvite" data-field="Pessoa de Convite" />
+                                <input type="text" class="form-control " id="participante-nomeconvite" data-field="Pessoa de Convite" />
                             </div>
                             <div class="col-sm-12 p-w-md m-t-md text-center">
                                 <h5>Fone de quem convidou</h5>
@@ -1594,11 +1537,10 @@ ${campos.find(x => x.Campo == 'Parente') ? ` <div class="col-sm-12 p-w-md m-t-md
                                     <input type="text" class="form-control" id="participante-parente" data-field="Nome do Parente" />
                                 </div>
                             </div>` : ''}
-
-${campos.find(x => x.Campo == 'Congregação') ? `<div class="col-sm-12 p-w-md m-t-md text-center">
-                                <h5>Participa de qual Congregação?</h5>
+<div class="col-sm-12 p-w-md m-t-md text-center">
+                                <h5>Religião</h5>
                                     <input type="text" class="form-control" id="participante-congregacao" data-field="Congregação" />
-                            </div>` : ''}
+                            </div>
 
 ${campos.find(x => x.Campo == 'Convênio') ? ` <div class="col-sm-12 p-w-md m-t-md text-center">
                                 <h5>Possui convênio médico?</h5>
@@ -1627,7 +1569,7 @@ ${campos.find(x => x.Campo == 'Casamento') ? ` <div class="col-sm-12 p-w-md m-t-
                                 </div>
                             </div>` : ''}
 
-${campos.find(x => x.Campo == 'Medicação') ? ` <div class="col-sm-12 p-w-md m-t-md text-center">
+<div class="col-sm-12 p-w-md m-t-md text-center">
                                 <h5>Toma alguma medicação?</h5>
 
                                 <div class="radio i-checks-green inline"><label> <input type="radio" id="has-medicacao" value="true" name="participante-hasmedicacao"> <i></i> Sim </label></div>
@@ -1637,7 +1579,7 @@ ${campos.find(x => x.Campo == 'Medicação') ? ` <div class="col-sm-12 p-w-md m-
                                     <h5>Qual?</h5>
                                     <input type="text" class="form-control" id="participante-medicacao" data-field="Medicação" />
                                 </div>
-                            </div>` : ''}
+                            </div>
 
 ${campos.find(x => x.Campo == 'Alergia') ? `<div class="col-sm-12 p-w-md m-t-md text-center">
                                 <h5>Tem alguma alergia?</h5>
