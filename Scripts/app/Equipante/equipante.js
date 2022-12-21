@@ -544,27 +544,27 @@ function GetEquipante(id) {
     }
     else {
         $("#equipante-id").val(0);
-        $(`#equipante - nome`).val("");
-        $(`#equipante - apelido`).val("");
+        $(`#equipante-nome`).val("");
+        $(`#equipante-apelido`).val("");
         $("#equipante-data-nascimento").val("");
-        $(`#equipante - email`).val("");
-        $(`#equipante - fone`).val("");
-        $(`#equipante - restricaoalimentar`).val("");
-        $(`#equipante - medicacao`).val("");
-        $(`#equipante - alergia`).val("");
-        $(`#equipante - cep`).val("");
-        $(`#equipante - logradouro`).val("");
-        $(`#equipante - bairro`).val('');
-        $(`#equipante - cidade`).val('');
-        $(`#equipante - estado`).val('');
-        $(`#equipante - numero`).val('');
-        $(`#equipante - complemento`).val('');
-        $(`#equipante - referencia`).val('');
-        $(`input[type = radio][name = equipante - sexo][value = 1]`).iCheck('check');
-        $(`input[type = radio][name = equipante - hasalergia][value = false]`).iCheck('check');
-        $(`input[type = radio][name = equipante - hasmedicacao][value = false]`).iCheck('check');
-        $(`input[type = radio][name = equipante - hasrestricaoalimentar][value = false]`).iCheck('check');
-        $(`input[type = radio][name = equipante - iscasado][value = false]`).iCheck('check');
+        $(`#equipante-email`).val("");
+        $(`#equipante-fone`).val("");
+        $(`#equipante-restricaoalimentar`).val("");
+        $(`#equipante-medicacao`).val("");
+        $(`#equipante-alergia`).val("");
+        $(`#equipante-cep`).val("");
+        $(`#equipante-logradouro`).val("");
+        $(`#equipante-bairro`).val('');
+        $(`#equipante-cidade`).val('');
+        $(`#equipante-estado`).val('');
+        $(`#equipante-numero`).val('');
+        $(`#equipante-complemento`).val('');
+        $(`#equipante-referencia`).val('');
+        $(`input[type=radio][name=equipante-sexo][value=1]`).iCheck('check');
+        $(`input[type=radio][name=equipante-hasalergia][value=false]`).iCheck('check');
+        $(`input[type=radio][name=equipante-hasmedicacao][value=false]`).iCheck('check');
+        $(`input[type=radio][name=equipante-hasrestricaoalimentar][value=false]`).iCheck('check');
+        $(`input[type=radio][name=equipante-iscasado][value=false]`).iCheck('check');
         $("#equipante-data-casamento").val("");
     }
 
