@@ -69,7 +69,7 @@ namespace SysIgreja.Controllers
 
         public ActionResult Index()
         {
-            ViewBag.Title = "Equipantes";
+            ViewBag.Title = "Usuários";
             GetEventos();
 
             return View();
