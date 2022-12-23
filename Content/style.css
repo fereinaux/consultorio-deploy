@@ -1591,11 +1591,20 @@ button.dim:active:before {
 .fc-agenda .fc-event-time,
 .fc-event a {
     padding: 4px 6px;
-    background-color: #1ab394;
+    background-color: #1ab394 !important;
     /* background color */
-    border-color: #1ab394;
+    border-color: #1ab394 !important;
     /* border color */
 }
+
+    .fc-event.no-pacient, .fc-event.no-pacient a {
+        padding: 4px 6px;
+        background-color: #df6618 !important;
+        /* background color */
+        border-color: #df6618 !important;
+        /* border color */
+    }
+
 
 .fc-event-time,
 .fc-event-title {

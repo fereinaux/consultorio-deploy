@@ -81,6 +81,14 @@ namespace SysIgreja.Controllers
         }
 
         [HttpPost]
+        public ActionResult GetArquivosConsulta(int id)
+        {
+            var query = arquivosBusiness.GetArquivosByReuniao(id);
+
+            return MapAqruivos(query);
+        }
+
+        [HttpPost]
         public ActionResult GetArquivosParticipante(int participanteId)
         {
             var query = arquivosBusiness.GetArquivosByParticipante(participanteId);

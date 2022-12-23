@@ -47,6 +47,7 @@ namespace Web
             container.RegisterType<IGenericRepository<Newsletter>, GenericRepository<Newsletter>>();
             container.RegisterType<IGenericRepository<EventoLote>, GenericRepository<EventoLote>>();
             container.RegisterType<IGenericRepository<Cracha>, GenericRepository<Cracha>>();
+            container.RegisterType<IGenericRepository<ConsultaEtiquetas>, GenericRepository<ConsultaEtiquetas>>();
             container.RegisterType<IGenericRepository<Padrinho>, GenericRepository<Padrinho>>();
             container.RegisterType<IGenericRepository<MeioPagamento>, GenericRepository<MeioPagamento>>();
             container.RegisterType<IGenericRepository<ReuniaoEvento>, GenericRepository<ReuniaoEvento>>();

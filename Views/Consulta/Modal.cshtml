@@ -45,7 +45,12 @@
                         <div class="col-sm-12 p-w-md text-center">
                             <h5>Paciente</h5>
 
-                            <select class="chosen-select required" data-field="Paciente" id="participantes"></select>
+                            <select class="chosen-select" data-field="Paciente" id="participantes"></select>
+                        </div>
+                        <div class="col-sm-12 p-w-md text-center">
+                            <h5>Marcadores</h5>
+                            <select class="form-control reuniao-marcadores" id="reuniao-marcadores" multiple="multiple" style="width: 100%">
+                            </select>
                         </div>
 
                         <div class="col-sm-12 p-w-md m-t-md text-center">
@@ -62,6 +67,42 @@
                     <button type="button" class="btn btn-white pull-right m-l-sm" data-dismiss="modal">Fechar</button>
                     <button type="button" class="btn btn-white pull-right" onclick="PostReuniao()">Salvar</button>
                     <button type="button" class="btn btn-primary pull-right m-l-sm pagamento-button" onclick="ConsultaPagamentos()">Pagamentos</button>
+                    <button type="button" class="btn btn-info pull-right m-l-sm anexos-button" onclick="ConsultaAnexos()">Anexos</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal inmodal" id="modal-anexos-consulta" role="dialog" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content animated bounceInRight">
+            <div class="modal-body">
+                <div class="moldura-modal p-h-xs">
+
+                    <div class="row p-md">
+                        <form enctype="multipart/form-data" id="frm-upload-arquivo-modal-consulta" method="post" novalidate="novalidate">
+                            <input type="hidden" name="ReuniaoEventoId" id="ReuniaoEventoId" />
+                            <label for="arquivo-modal-consulta" style="width: 100%;" class="inputFile">
+                                <span class="btn btn-default inputFile" style="width: 100%;" aria-hidden="true">Adicionar</span>
+                                <input style="display: none;" class="custom-file-input inputFile" id="arquivo-modal-consulta" name="arquivo-modal-consulta" type="file" value="">
+                            </label>
+                        </form>
+                        <table id="table-anexos-consulta" class="table table-striped table-bordered table-hover" cellspacing="0" style="width: 100%">
+                            <thead>
+                                <tr>
+                                    <th>Arquivo</th>
+                                    <th>Extensão</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-white pull-right m-l-sm" data-dismiss="modal">Fechar</button>
                 </div>
             </div>
         </div>
@@ -81,7 +122,17 @@
     }
 
     .fc .fc-list-event:hover td, .fc .fc-list-event:hover a {
-        background-color: #095a4a;
+        background-color: #095a4a !important;
+    }
+
+    .fc .fc-list-event.no-pacient:hover td, .fc .fc-list-event.no-pacient:hover a {
+        background-color: #a1460b !important;
+        /* background color */
+        border-color: #a1460b !important;
+    }
+
+    .fc-timegrid-event-harness-inset .fc-timegrid-event {
+        height: fit-content;
     }
 </style>
 
@@ -89,6 +140,21 @@
     pacienteId = undefined
     function newReuniaoPaciente() {
         EditReuniao(0, undefined, pacienteId)
+    }
+
+    function carregarEtiquetas() {
+        $.ajax({
+            url: '/Etiqueta/GetEtiquetasByEventoId',
+            data: { eventoId: $("#reuniao-eventoid-consulta").val() || $("#eventoid").val() || $("#participante-eventoid").val() },
+            datatype: "json",
+            type: "POST",
+            success: (result) => {
+                $("#reuniao-marcadores").html(`
+${result.data.map(p => `<option data-cor="${p.Cor}" value=${p.Id}>${p.Nome}</option>`)}
+`)
+                $('#reuniao-marcadores').select2({ dropdownParent: $("#form-reuniao") });
+            }
+        });
     }
 
     function CarregarTableConsultas(id) {
@@ -131,10 +197,113 @@
         };
         $("#table-consultas").DataTable(tableConsultasConfig);
         $("#modal-consultas").modal();
-    }
+    }frm
 
     function ConsultaPagamentos() {
         Pagamentos({ Id: $("#reuniao-id").val() })
+    }
+
+    function ConsultaAnexos() {
+        AnexosConsulta($("#reuniao-id").val())
+    }
+
+    function AnexosConsulta(id) {
+        $("#ReuniaoEventoId").val(id);
+        GetAnexosConsulta(id);
+        $("#modal-anexos-consulta").modal();
+    }
+
+    function changeArquivoConsulta() {
+
+        $("#arquivo-modal-consulta").change(function () {
+            PostArquivoConnsulta();
+        });
+    }
+
+    function PostArquivoConnsulta() {
+
+        var dataToPost = new FormData($('#frm-upload-arquivo-modal-consulta')[0]);
+        var filename = dataToPost.get('arquivo-modal-consulta').name
+
+        var arquivo = new File([dataToPost.get('arquivo-modal-consulta')], filename);
+
+        dataToPost.set('Arquivo', arquivo)
+        $.ajax(
+            {
+                processData: false,
+                contentType: false,
+                type: "POST",
+                data: dataToPost,
+                url: "/Arquivo/PostArquivo",
+                success: function () {
+                    GetAnexosConsulta()
+
+                }
+            });
+    }
+
+    function GetAnexosConsulta() {
+        const tableArquivoConfig = {
+            language: languageConfig,
+            lengthMenu: [200, 500, 1000],
+            colReorder: false,
+            serverSide: false,
+            deferloading: 0,
+            orderCellsTop: true,
+            fixedHeader: true,
+            filter: true,
+            orderMulti: false,
+            responsive: true, stateSave: true, stateSaveCallback: stateSaveCallback, stateLoadCallback: stateLoadCallback,
+            destroy: true,
+            dom: domConfigNoButtons,
+            columns: [
+                { data: "Nome", name: "Nome", autoWidth: true },
+                { data: "Extensao", name: "Extensao", autoWidth: true },
+                {
+                    data: "Id", name: "Id", orderable: false, width: "15%",
+                    "render": function (data, type, row) {
+                        return `${GetButton('GetArquivoConsulta', data, 'blue', 'fa-download', 'Download')}
+                            ${GetButton('DeleteArquivoConsulta', data, 'red', 'fa-trash', 'Excluir')}`;
+                    }
+                }
+            ],
+            order: [
+                [0, "asc"]
+            ],
+            ajax: {
+                url: '/Arquivo/GetArquivosConsulta',
+                data: { id: $("#reuniao-id").val() },
+                datatype: "json",
+                type: "POST"
+            }
+        };
+
+        $("#table-anexos-consulta").DataTable(tableArquivoConfig);
+    }
+
+    function GetArquivoConsulta(id) {
+        window.open(`/Arquivo/GetArquivo/${id}`)
+    }
+
+    function DeleteArquivoConsulta(id) {
+        ConfirmMessageDelete().then((result) => {
+            if (result) {
+                $.ajax({
+                    url: "/Arquivo/DeleteArquivo/",
+                    datatype: "json",
+                    type: "POST",
+                    contentType: 'application/json; charset=utf-8',
+                    data: JSON.stringify(
+                        {
+                            Id: id
+                        }),
+                    success: function () {
+                        SuccessMesageDelete();
+                        GetAnexosConsulta();
+                    }
+                });
+            }
+        });
     }
 
     function GetReuniao(id, data, paciente) {
@@ -166,12 +335,16 @@
                     $('.pagamento-button').css('display', 'block')
                     $("#reuniao-titulo").val(data.Reuniao.Titulo),
                         $("#reuniao-data").val(data.Reuniao.DataReuniao);
+                    $('#reuniao-marcadores').val(data.Reuniao.Etiquetas)
+                    $('#reuniao-marcadores').select2({ dropdownParent: $("#form-reuniao") });
                 }
             });
         }
         else {
+            $('#reuniao-marcadores').val('')
+            $('#reuniao-marcadores').select2({ dropdownParent: $("#form-reuniao") });
             $("#reuniao-id").val(0);
-            $("#participantes").val(paciente > 0 ? paciente : "Pesquisar").trigger("chosen:updated");
+            $("#participantes").val(paciente > 0 ? paciente : "null").trigger("chosen:updated");
             $('.delete-button').css('display', 'none')
             $('.pagamento-button').css('display', 'none')
             $("#reuniao-data").val(data ?? moment().format('DD/MM/YYYY HH:mm'));
@@ -194,7 +367,7 @@
 
     function GetParticipantes(id) {
         $("#participantes").empty();
-        $('#participantes').append($('<option>Pesquisar</option>'));
+        $('#participantes').append($('<option value="null">Pesquisar</option>'));
         $.ajax({
             url: '/Participante/GetParticipantesSelect',
             data: { EventoId: $("#reuniao-eventoid-consulta").val() || $("#eventoid").val() || $("#participante-eventoid").val() },
@@ -205,7 +378,7 @@
                     if (participante.Status != Cancelado)
                         $('#participantes').append($(`<option value="${participante.Id}">${participante.Nome}</option>`));
                 });
-                $("#participantes").val(id > 0 ? id : "Pesquisar").trigger("chosen:updated");
+                $("#participantes").val(id > 0 ? id : "null").trigger("chosen:updated");
             }
         });
     }
@@ -253,7 +426,8 @@
                         ParticipanteId: $('#participantes').val(),
                         Titulo: $("#reuniao-titulo").val(),
                         Pauta: $('#reuniao-conteudo').summernote('code'),
-                        DataReuniao: moment($("#reuniao-data").val(), 'DD/MM/YYYY HH:mm', 'pt-br').toJSON()
+                        DataReuniao: moment($("#reuniao-data").val(), 'DD/MM/YYYY HH:mm', 'pt-br').toJSON(),
+                        Etiquetas: $('#reuniao-marcadores').val()
                     }),
                 success: function () {
                     SuccessMesageOperation();

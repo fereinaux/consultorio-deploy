@@ -1,9 +1,11 @@
 ﻿+$(document).ready(() => {
+    carregarEtiquetas()
     HideMenu();
     GetResultadosAdmin();
-    carregarConsultas()
     GetParticipantes()
     onChangePagamentos()
+    carregarConsultas()
+    changeArquivoConsulta()
     //GetResultadosGeral();
 });
 
@@ -46,13 +48,35 @@ function carregarConsultas() {
                     center: 'title',
                     end: 'new' // will normally be on the right. if RTL, will be on the left
                 },
+                eventTimeFormat: {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    meridiem: false
+                },
+                eventContent: function (arg) {
+                    let div = document.createElement('div')
+
+                    $(div).html(`${arg.event.title} <div> ${arg.event.extendedProps.etiquetas.map(
+                        etiqueta => {
+                            cor = $(`#reuniao-marcadores option[value=${etiqueta}]`).data('cor')
+                            titulo = $(`#reuniao-marcadores option[value=${etiqueta}]`).text()
+                            return `<span class="badge m-r-xs" style="background-color:${cor};color:#fff">${titulo}</span>`
+                        }).join().replace(/,/g, '') }`)
+
+
+                    let arrayOfDomNodes = [div]
+                    return { domNodes: arrayOfDomNodes }
+                },
                 events: data.data.map(e => {
                     return {
-                        title: e.Paciente,
+                        title: e.Paciente ?? "Agenda Bloqueada",
                         start: e.DataReuniao,
+                        backgroundColor: 'transparent',
+                        className: e.Paciente ? null : "no-pacient",
                         extendedProps: {
-                            id: e.Id
-                        }
+                            id: e.Id,
+                            etiquetas: e.Etiquetas
+                        },
                     }
                 }),
                 eventClick: function (info) {

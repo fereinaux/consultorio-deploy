@@ -67,15 +67,37 @@
                             center: 'title',
                             end: 'dayGridMonth,dayGridWeek,timeGridDay,listDay' // will normally be on the right. if RTL, will be on the left
                         },
+                        eventTimeFormat: {
+                            hour: '2-digit',
+                            minute: '2-digit',
+                            meridiem: false
+                        },
                         events: data.data.map(e => {
                             return {
-                                title: e.Paciente,
+                                title: e.Paciente ?? "Agenda Bloqueada",
+                                backgroundColor: 'transparent',
+                                className: e.Paciente ? null : "no-pacient",
                                 start: e.DataReuniao,
                                 extendedProps: {
-                                    id: e.Id
-                                }
+                                    id: e.Id,
+                                    etiquetas: e.Etiquetas
+                                },
+
                             }
                         }),
+                        eventContent: function (arg) {
+                            let div = document.createElement('div')
+                            $(div).html(`<div style="display:flex;gap:5px;flex-wrap:wrap"><span>${moment(arg.event.start).format('HH:mm')}</span><span>${arg.event.title}</span></div> <div style="margin-top:5px;display:flex;gap:5px;flex-wrap:wrap">${arg.event.extendedProps.etiquetas.map(
+                                etiqueta => {
+                                    cor = $(`#reuniao-marcadores option[value=${etiqueta}]`).data('cor')
+                                    titulo = $(`#reuniao-marcadores option[value=${etiqueta}]`).text()
+                                    return `<span class="badge" style="background-color:${cor};color:#fff">${titulo}</span>`
+                                }).join().replace(/,/g, '')}</div>`)
+
+
+                            let arrayOfDomNodes = [div]
+                            return { domNodes: arrayOfDomNodes }
+                        },
                         eventClick: function (info) {
                             EditReuniao(info.event._def.extendedProps.id)
                         },
@@ -89,9 +111,11 @@
             })
         }
         $(document).ready(function () {
+            carregarEtiquetas()
             GetParticipantes()
             carregarConsultas()
             onChangePagamentos()
+            changeArquivoConsulta()
         });
     </script>
 }

@@ -486,6 +486,8 @@ $(document).ready(function () {
     }
     onChangePagamentos()
     GetParticipantes()
+    carregarEtiquetas()
+    changeArquivoConsulta()
 });
 
 $("#modal-pagamentos").on('hidden.bs.modal', function () {
@@ -691,6 +693,7 @@ function GetParticipante(id) {
             type: "GET",
             contentType: 'application/json; charset=utf-8',
             success: function (data) {
+                console.log(data.Participante);
                 $("#participante-id").val(data.Participante.Id);
                 $(`#participante-nome`).val(data.Participante.Nome);
                 $(`#participante-apelido`).val(data.Participante.Apelido);

@@ -48,7 +48,8 @@ namespace SysIgreja.Controllers
                     DataReuniao = x.DataReuniao.ToString("yyyy-MM-ddTHH:mm"),
                     Pauta = x.Pauta,
                     PacienteId = x.ParticipanteId,
-                    Paciente = x.Participante.Nome
+                    Paciente = x.Participante?.Nome,
+                    Etiquetas = x.ConsultaEtiquetas.Select(y => y.Etiqueta.Id)
 
                 });
 
@@ -68,7 +69,7 @@ namespace SysIgreja.Controllers
                     DataReuniao = x.DataReuniao.ToString("dd/MM/yyyy"),
                     Pauta = x.Pauta,
                     PacienteId = x.ParticipanteId,
-                    Paciente = x.Participante.Nome
+                    Paciente = x.Participante?.Nome
 
                 });
 
@@ -86,7 +87,8 @@ namespace SysIgreja.Controllers
                     DataReuniao = x.DataReuniao.ToString("dd/MM/yyyy HH:mm"),
                     Pauta = x.Pauta,
                     PacienteId = x.ParticipanteId,
-                    Paciente = x.Participante.Nome
+                    Paciente = x.Participante?.Nome,
+                    Etiquetas = x.ConsultaEtiquetas.Select(y => y.Etiqueta.Id)
 
                 }).FirstOrDefault();
 
