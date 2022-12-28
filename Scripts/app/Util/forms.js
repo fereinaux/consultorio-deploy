@@ -278,6 +278,36 @@ function IsCPF(cpf) {
     return cpf.length == 14;
 }
 
+function getMonthsBetweenDates(dateIni, dateFim) {
+    var dates = [dateIni, dateFim];
+    var diff = dates.map(function (i) {
+        var m = moment(i,'DD/MM/YYYY');
+        return {
+            month: m.month(),
+            year: m.year()
+        };
+    });
+
+    var start = Object.assign({}, diff[0]), end = Object.assign({}, diff[diff.length - 1]);
+    var monthNames = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"];
+    var months = [];
+    if (end.year >= start.year) {
+        months.push(`${monthNames[start.month]} ${start.year}`)
+        while (start.month < end.month || start.year < end.year) {
+
+            if (start.month < 11) {
+                start.month++;
+            } else {
+                start.month = 0;
+                start.year++;
+            }
+            months.push(`${monthNames[start.month]} ${start.year}`)
+        }
+
+    }
+    return months
+}
+
 var EventoButton = function (context) {
     var ui = $.summernote.ui;
 
@@ -437,3 +467,4 @@ var PadrinhoFoneButton = function (context) {
 
     return button.render();   // return button as jquery object
 }
+

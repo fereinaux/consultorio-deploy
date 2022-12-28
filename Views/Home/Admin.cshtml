@@ -30,12 +30,40 @@
         }*@
     <div class="row">
         <div class="col-lg-12 col-sm-12" style="padding:5px">
-            <select class="form-control" id="eventoid" onchange="GetResultadosAdmin()">
-                @foreach (var evento in ViewBag.Eventos)
-                {
-                    <option value="@evento.Id" data-valor="@evento.Valor" data-pendente="@evento.IsPendente" data-role="@evento.Role">@evento.Descricao</option>
-                }
-            </select>
+            <div class="ibox">
+                <div class="ibox-title" style="display: flex;justify-content: space-between;">
+                    <h4>Filtros</h4>
+                    <div class="ibox-tools pull-right">
+                        <a class="collapse-link">
+                            <i class="fa fa-chevron-up"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="ibox-content">
+                    <div class="row">
+                        <div class="col-xs-12 col-lg-6">
+                            <h5>Consultório</h5>
+                            <select class="form-control" id="eventoid" onchange="GetResultadosAdmin()">
+                                @foreach (var evento in ViewBag.Eventos)
+                                {
+                                    <option value="@evento.Id" data-valor="@evento.Valor" data-pendente="@evento.IsPendente" data-role="@evento.Role">@evento.Descricao</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="col-xs-12 col-lg-3">
+                            <h5>Data Inicial</h5>
+                            <input type="text" class="form-control full-date required" id="data-ini" data-field="Data Inicial" />
+                        </div>
+                        <div class="col-xs-12 col-lg-3">
+                            <h5>Data Final</h5>
+                            <input type="text" class="form-control full-date required" id="data-fim" data-field="Data Final" />
+                        </div>
+
+
+                    </div>
+                </div>
+            </div>
+
         </div>
         <div class="col-lg-6 col-xs-12 p-w-xs">
             <div class="row vertical-align">
@@ -74,7 +102,7 @@
 
             </div>
             <div class="row">
-                <div class="pointer" id="resumo-financeiro-bloco" style="display:none" onclick="window.location.href='@Url.Action("Index", "Lancamento")'">
+                <div class="pointer" id="resumo-financeiro-bloco" style="display:none">
                     <div class="col-xs-12 p-w-xs">
                         <div class="widget-head-color-box navy-bg p-lg text-center">
                             <div class="m-b-md">
@@ -103,6 +131,8 @@
                                     </tr>
                                 </tfoot>
                             </table>
+                            <canvas id="chart-financeiro">
+                            </canvas>
                         </div>
                     </div>
                 </div>
@@ -144,7 +174,7 @@
                             </div>
                         </div>
                         <div class="widget-text-box">
-                            <div id="calendar"></div>
+                            <div id="calendar-consultas"></div>
                         </div>
                     </div>
                 </div>

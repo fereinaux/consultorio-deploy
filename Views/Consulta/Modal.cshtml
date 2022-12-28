@@ -53,7 +53,7 @@
                             </select>
                         </div>
 
-                        <div class="col-sm-12 p-w-md m-t-md text-center">
+                        <div class="col-sm-12 p-w-md m-t-md text-center conteudo-reuniao">
                             <h5>Conteúdo</h5>
 
                             <textarea class="form-control" id="reuniao-conteudo" name="reuniao-conteudo"></textarea>
@@ -197,7 +197,7 @@ ${result.data.map(p => `<option data-cor="${p.Cor}" value=${p.Id}>${p.Nome}</opt
         };
         $("#table-consultas").DataTable(tableConsultasConfig);
         $("#modal-consultas").modal();
-    }frm
+    }
 
     function ConsultaPagamentos() {
         Pagamentos({ Id: $("#reuniao-id").val() })

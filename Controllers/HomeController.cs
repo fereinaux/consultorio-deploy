@@ -81,33 +81,36 @@ namespace SysIgreja.Controllers
         }
 
         [HttpGet]
-        public ActionResult GetResultadosAdmin(int EventoId)
+        public ActionResult GetResultadosAdmin(int EventoId, DateTime? dataIni, DateTime? dataFim)
         {
             var evento = eventosBusiness.GetEventoById(EventoId);
 
             var result = new
             {
 
-                Evento = evento.Status.GetDescription(),               
-              
+                Evento = evento.Status.GetDescription(),
+
                 Total = participantesBusiness.GetParticipantesByEvento(EventoId).Where(x => x.Status != StatusEnum.Cancelado && x.Status != StatusEnum.Espera).Count(),
                 Meninos = participantesBusiness.GetParticipantesByEvento(EventoId).Where(x => x.Sexo == SexoEnum.Masculino && x.Status != StatusEnum.Cancelado && x.Status != StatusEnum.Espera).Count(),
                 Meninas = participantesBusiness.GetParticipantesByEvento(EventoId).Where(x => x.Sexo == SexoEnum.Feminino && x.Status != StatusEnum.Cancelado && x.Status != StatusEnum.Espera).Count(),
                 MeiosPagamento = lancamentoBusiness.GetLancamentos().Where(x => x.EventoId == EventoId && x.Valor > 0).Select(x => x.MeioPagamento.Descricao).Distinct(),
-                Financeiro = lancamentoBusiness.GetLancamentos().Where(x => x.EventoId == EventoId && x.Valor > 0).Select(x => new
+                Financeiro = lancamentoBusiness.GetLancamentos().Where(x => x.EventoId == EventoId && x.Valor > 0 && (!(dataIni.HasValue && dataFim.HasValue) || x.DataCadastro >= dataIni && x.DataCadastro <= dataFim)).Select(x => new
                 {
                     MeioPagamento = x.MeioPagamento.Descricao,
                     Valor = x.Valor,
-                    Tipo = x.Tipo
+                    Tipo = x.Tipo,
+                    Data = x.DataCadastro
                 }).GroupBy(x => new
                 {
                     x.Tipo,
-                    x.MeioPagamento
+                    x.MeioPagamento,
+                    x.Data.Value.Month
                 })
                 .Select(x => new
                 {
                     Tipo = x.Key.Tipo,
                     MeioPagamento = x.Key.MeioPagamento,
+                    Mes = x.Key.Month,
                     Valor = x.Sum(y => y.Valor)
                 })
                 .ToList()
@@ -115,6 +118,7 @@ namespace SysIgreja.Controllers
                 {
                     Tipo = x.Tipo.GetDescription(),
                     MeioPagamento = x.MeioPagamento,
+                    Mes = x.Mes.ToString(),
                     Valor = x.Valor
                 })
                 .OrderByDescending(x => x.Tipo),
@@ -124,7 +128,7 @@ namespace SysIgreja.Controllers
                     Nome = UtilServices.CapitalizarNome(x.Nome),
                     Sexo = x.Sexo.GetDescription(),
                     Idade = UtilServices.GetAge(x.DataNascimento)
-                }).ToList(),                
+                }).ToList(),
             };
 
             return Json(new
@@ -176,7 +180,7 @@ namespace SysIgreja.Controllers
                 equipanteEvento.Evento.ConfiguracaoId.Value,
                     Cor = equipanteEvento.Evento.Configuracao.CorBotao,
                     Logo = equipanteEvento.Evento.Configuracao.Logo != null ? Convert.ToBase64String(equipanteEvento.Evento.Configuracao.Logo.Conteudo) : ""
-                },              
+                },
                 Membros = membrosEquipe.ToList().Select(x => new EquipanteViewModel
                 {
                     Id = x.Equipante.Id,

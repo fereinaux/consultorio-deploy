@@ -178,7 +178,7 @@
             getConfig(this.value)
             if (this.value != 999) {
                 localStorage.setItem('eventoId', this.value)
-            }
+            }        
 
         })
 
@@ -225,8 +225,13 @@
 
 
         function getConfig(id) {
-            if (id != 999) {
 
+            if (id != 999) {
+                if ($("*[id*='eventoid'] option:selected").data('role') == "Administrativo" || $("*[id*='eventoid'] option:selected").data('role') == "Financeiro") {
+                    $('.conteudo-reuniao').css("display", 'none')
+                } else {
+                    $('.conteudo-reuniao').css("display", 'block')
+                }
 
                 $.ajax({
                     url: "/Evento/GetValorEvento/",

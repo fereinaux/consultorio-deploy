@@ -1,4 +1,7 @@
 ﻿+$(document).ready(() => {
+    $('#data-ini').val(moment().startOf('quarter').format('DD/MM/YYYY'))
+    $('#data-fim').val(moment().endOf('quarter').format('DD/MM/YYYY'))
+    $('#data-fim,#data-ini').change(GetResultadosAdmin)
     carregarEtiquetas()
     HideMenu();
     GetResultadosAdmin();
@@ -31,7 +34,7 @@ function carregarConsultas() {
         data: { EventoId: $("#eventoid").val(), },
         type: "GET",
         success: (data) => {
-            var calendarEl = document.getElementById('calendar');
+            var calendarEl = document.getElementById('calendar-consultas');
             var calendar = new FullCalendar.Calendar(calendarEl, {
                 customButtons: {
                     new: {
@@ -61,7 +64,7 @@ function carregarConsultas() {
                             cor = $(`#reuniao-marcadores option[value=${etiqueta}]`).data('cor')
                             titulo = $(`#reuniao-marcadores option[value=${etiqueta}]`).text()
                             return `<span class="badge m-r-xs" style="background-color:${cor};color:#fff">${titulo}</span>`
-                        }).join().replace(/,/g, '') }`)
+                        }).join().replace(/,/g, '')}`)
 
 
                     let arrayOfDomNodes = [div]
@@ -95,7 +98,7 @@ function GetResultadosGeral() {
         $.ajax({
             url: '/Home/GetResultadosGeral',
             datatype: "json",
-            data: { EventoId: $("#eventoid").val() },
+            data: { EventoId: $("#eventoid").val(), dataIni: moment($("#data-ini").val(), 'DD/MM/YYYY', 'pt-br').toJSON(), dataFim: moment($("#data-fim").val(), 'DD/MM/YYYY', 'pt-br').toJSON(), },
             type: "GET",
             success: (data) => {
                 result = data.result;
@@ -185,6 +188,7 @@ $('body').on('DOMNodeInserted', '.div-calendar', function () {
 
 });
 
+let chartFinanc
 
 
 function GetResultadosAdmin() {
@@ -196,7 +200,7 @@ function GetResultadosAdmin() {
     $.ajax({
         url: '/Home/GetResultadosAdmin',
         datatype: "json",
-        data: { EventoId: $("#eventoid").val() },
+        data: { EventoId: $("#eventoid").val(), dataIni: moment($("#data-ini").val(), 'DD/MM/YYYY', 'pt-br').toJSON(), dataFim: moment($("#data-fim").val(), 'DD/MM/YYYY', 'pt-br').toJSON(), },
         type: "GET",
         success: (data) => {
             result = data.result;
@@ -227,8 +231,8 @@ function GetResultadosAdmin() {
             receberTotal = 0
             pagarTotal = 0
             result.MeiosPagamento.map(mp => {
-                receber = result.Financeiro.find(f => f.Tipo == 'Receber' && f.MeioPagamento == mp)
-                pagar = result.Financeiro.find(f => f.Tipo == 'Pagar' && f.MeioPagamento == mp)
+                receber = result.Financeiro.filter(f => f.Tipo == 'Receber' && f.MeioPagamento == mp).reduce((a, b) => ({ MeioPagamento: a.MeioPagamento, Valor: a.Valor + b.Valor }), { Valor: 0 })
+                pagar = result.Financeiro.filter(f => f.Tipo == 'Pagar' && f.MeioPagamento == mp).reduce((a, b) => ({ MeioPagamento: a.MeioPagamento, Valor: a.Valor + b.Valor }), { Valor: 0 })
                 receberValor = receber ? receber.Valor : 0
                 receberTotal += receberValor
                 pagarValor = pagar ? pagar.Valor : 0
@@ -256,6 +260,71 @@ function GetResultadosAdmin() {
             });
 
             $('#ultimos-inscritos').html(htmlInscritos);
+            if (chartFinanc) {
+                chartFinanc.destroy()
+            }
+
+            months = getMonthsBetweenDates($("#data-ini").val(), $("#data-fim").val())
+            chartFinanc = new Chart(
+                document.getElementById('chart-financeiro'),
+                {
+                    type: 'line',
+                    options: {
+                        scales: {
+                            y: {
+                                ticks: {
+                                    // Include a dollar sign in the ticks
+                                    callback: function (value, index, ticks) {
+                                        return `R$ ${value.toLocaleString('pt-br', { minimumFractionDigits: 2 })}`;
+                                    }
+                                }
+                            },
+                         
+                        },
+                        responsive: true,
+                        plugins: {
+                            legend: {
+                                position: 'top',
+                            },
+                            title: {
+                                display: false
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function (context) {
+                                        let label = context.dataset.label || '';
+
+                                        if (label) {
+                                            label += ': ';
+                                        }
+                                        if (context.parsed.y !== null) {
+                                            label +=`R$ ${context.parsed.y.toLocaleString('pt-br', { minimumFractionDigits: 2 })}`;
+                                        }
+                                        return label;
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    data: {
+                        labels: months,
+                        datasets: [
+                            {
+                                label: 'Receber',
+                                backgroundColor: "#1ebd7b70",
+                                borderColor: "#1ebd7b",
+                                data: months.map(mes => result.Financeiro.filter(x => x.Tipo == "Receber" && x.Mes == moment(mes, "MMM YYYYY").locale('pt-br').month() + 1)).map(valorMes => valorMes.reduce((a, b) => ({ Valor: a.Valor + b.Valor }), { Valor: 0 })).map(valor =>  valor.Valor)
+                            },   
+                            {
+                                label: 'Pagar',
+                                backgroundColor: "#d5343487",
+                                borderColor: "#d53434",
+                                data: months.map(mes => result.Financeiro.filter(x => x.Tipo == "Pagar" && x.Mes == moment(mes, "MMM YYYYY").locale('pt-br').month() + 1)).map(valorMes => valorMes.reduce((a, b) => ({ Valor: a.Valor + b.Valor }), { Valor: 0 })).map(valor => valor.Valor)
+                            },  
+                        ]
+                    }
+                }
+            );
 
             htmlEquipes = '';
             htmlEquipesMobile = '';
