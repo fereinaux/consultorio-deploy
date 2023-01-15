@@ -60,7 +60,7 @@
                 success: (data) => {
                     var calendarEl = document.getElementById('calendar');
                     var calendar = new FullCalendar.Calendar(calendarEl, {
-                        initialView: 'timeGridDay',
+                        initialView: localStorage.getItem('calendar') ?? 'dayGridMonth' ,
                         locale: 'pt-br',
                         headerToolbar: {
                             start: 'today prev,next', // will normally be on the left. if RTL, will be on the right
@@ -97,6 +97,9 @@
 
                             let arrayOfDomNodes = [div]
                             return { domNodes: arrayOfDomNodes }
+                        },
+                        viewClassNames: function ({ view }) {
+                            localStorage.setItem('calendar', view.type)
                         },
                         eventClick: function (info) {
                             EditReuniao(info.event._def.extendedProps.id)

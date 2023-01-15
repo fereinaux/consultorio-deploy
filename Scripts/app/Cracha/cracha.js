@@ -26,8 +26,7 @@ function CarregarTabelaCracha() {
                 data: "Id", name: "Id", orderable: false, width: "25%",
                 "render": function (data, type, row) {
 
-                    return `${GetButton('CloneCracha', data, 'green', 'fa-clone', 'Editar')}
-${GetButton('EditCracha', data, 'blue', 'fa-edit', 'Editar')}
+                    return `${GetButton('EditCracha', data, 'blue', 'fa-edit', 'Editar')}
                             ${GetButton('DeleteCracha', data, 'red', 'fa-trash', 'Excluir')}`;
                 }
             }
@@ -35,6 +34,20 @@ ${GetButton('EditCracha', data, 'blue', 'fa-edit', 'Editar')}
         order: [
             [1, "desc"]
         ],
+
+        drawCallback: function () {
+            var api = this.api();
+            if (api.rows().data()[0]) {
+                $('#btn_Adicionar').parent().css('display', 'none')
+                $('.col-consultorio').removeClass('col-sm-8')
+                $('.col-consultorio').addClass('col-sm-12')
+            } else {
+                $('#btn_Adicionar').parent().css('display', 'block')
+                $('.col-consultorio').addClass('col-sm-8')
+                $('.col-consultorio').removeClass('col-sm-12')
+            }
+
+        },
         ajax: {
             url: '/Cracha/GetCrachas',
             data: { ConfiguracaoId: $('#cracha-configId').val() },
@@ -101,16 +114,14 @@ function GetCracha(id) {
         });
     }
     else {
-        $('#margin-w').val(1)
-        $('#margin-h').val(1)
-        $('#cols').val(5)
-        $('#rows').val(2)
+        $('#margin-w').val(0)
+        $('#margin-h').val(0)
         $('#titulo').val('')
-        $('#largura').val(8)
-        $('#altura').val(12)
-        $('#paper').val('a3')
-        $(`input[type=radio][id=orientation][value=l]`).iCheck('check');
-        $(`input[type=radio][id=background][value=foto]`).iCheck('check');
+        $('#largura').val(21)
+        $('#altura').val(10)
+        $('#paper').val('a4')
+        $(`input[type=radio][id=orientation][value=r]`).iCheck('check');
+        $(`input[type=radio][id=background][value=nenhum]`).iCheck('check');
         $('.nome-font #font-picker')
             .val('Roboto:500').trigger('change')
         $('.equipe-font #font-picker')
@@ -120,20 +131,19 @@ function GetCracha(id) {
 
         $('.apelido-font #font-size').val(35)
         $('.apelido-font #font-padding').val(5)
-        $('.apelido-font #font-color').val('#FFFFFF')
+        $('.apelido-font #font-color').val('#000')
         Align('left', 'apelido')
         $('.nome-font #font-size').val(20)
         $('.nome-font #font-padding').val(5)
-        $('.nome-font #font-color').val('#FFFFFF')
+        $('.nome-font #font-color').val('#000')
         Align('left', 'nome')
         $('.equipe-font #font-size').val(15)
         $('.equipe-font #font-padding').val(5)
-        $('.equipe-font #font-color').val('#FFFFFF')
+        $('.equipe-font #font-color').val('#000')
         Align('left', 'equipe')
-        $('#cracha').html(`<img src="./Images/profile.jpg" class="background" style="position:absolute;left:0;top:0;height:100%;width:100%;z-index:0" />
-                                <span style="white-space:normal;display: block;position: relative; z-index: 999; top: 50%; font-size:30px;" class="apelido-cracha text-cracha">{Apelido}</span>
-                                <span style="white-space:normal;display:block;position:relative;z-index:999; top:50%; font-size:20px" class="nome-cracha text-cracha">{Nome}</span>
-                                <span style="white-space:normal;display: block;position: relative; z-index: 999; top: 50%; font-size:30px;" class="equipe-cracha text-cracha">{Equipe}</span>`)
+        $('#cracha').html(`
+                                <span style="white-space:normal;display: block;position: relative; z-index: 999; top: 50%; font-size:30px;" class="apelido-cracha text-cracha">{Valor}</span>
+                                <span style="white-space:normal;display:block;position:relative;z-index:999; top:50%; font-size:20px" class="nome-cracha text-cracha">{Nome}</span>`)
         renderCracha()
         dragResize()
     }
@@ -216,11 +226,11 @@ function PostCracha() {
                         Margin: parseFloat($('.apelido-font #font-padding').val()),
                     },
                     Equipe: {
-                        Family: $('.equipe-font #font-picker').val(),
-                        Size: parseFloat($('.equipe-font #font-size').val()),
-                        Color: $('.equipe-font #font-color').val(),
-                        Align: $('.equipe-font .active').attr('class').split(/\s+/)[1].split('-')[2],
-                        Margin: parseFloat($('.equipe-font #font-padding').val()),
+                        Family: $('.apelido-font #font-picker').val(),
+                        Size: parseFloat($('.apelido-font #font-size').val()),
+                        Color: $('.apelido-font #font-color').val(),
+                        Align: $('.apelido-font .active').attr('class').split(/\s+/)[1].split('-')[2],
+                        Margin: parseFloat($('.apelido-font #font-padding').val()),
                     }
                 }),
             success: function () {
@@ -251,7 +261,7 @@ function Align(side, type) {
 
 function print() {
     $('span.nome-cracha').text('Felipe Reinaux')
-    $('span.apelido-cracha').text('Renô')
+    $('span.apelido-cracha').text('R$ 150,00')
     $('span.equipe-cracha').text('Secretaria')
     $('#cracha').toggleClass('moldura-modal')
     html2canvas($("#cracha")[0]).then(canvas => {
@@ -259,15 +269,13 @@ function print() {
             'image/png');
         var formatArray = $('#paper').val() == 'custom' ? new Array(Number($('#largura').val()), Number($('#altura').val())) : $('#paper').val()
         var doc = new jsPDF($('#paper').val() == 'custom' ? 'p' : $('#orientation:checked').val(), 'cm', formatArray);
-        for (var i = 0; i < Number($('#rows').val()); i++) {
-            for (var z = 0; z < Number($('#cols').val()); z++) {
-                doc.addImage(imgData, 'PNG', Number($('#margin-h').val()) + (z * Number($('#largura').val())), Number($('#margin-w').val()) + (i * Number($('#altura').val())));
-            }
-        }
+        console.log(Number($('#margin-h').val()) + Number($('#largura').val()), Number($('#margin-w').val()) + Number($('#altura').val()));
+        doc.addImage(imgData, 'PNG', Number($('#margin-h').val()), Number($('#margin-w').val()));
+
         printDoc(doc)
         $('#cracha').toggleClass('moldura-modal')
         $('span.nome-cracha').text('{Nome}')
-        $('span.apelido-cracha').text('{Apelido}')
+        $('span.apelido-cracha').text('{Valor}')
         $('span.equipe-cracha').text('{Equipe}')
     });
 }
