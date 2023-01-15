@@ -51,74 +51,84 @@
 @section Scripts {
 
     <script>
+        let calendar
         function carregarConsultas() {
             $.ajax({
                 url: '/Consulta/GetReunioes',
                 datatype: "json",
-                data: { EventoId: $("#reuniao-eventoid-consulta").val(), },
+                data: { EventoId: $("#reuniao-eventoid-consulta").val(), Start: moment(calendar.view.activeStart, 'DD/MM/YYYY', 'pt-br').toJSON(), End: moment(calendar.view.activeEnd, 'DD/MM/YYYY', 'pt-br').toJSON() },
                 type: "GET",
                 success: (data) => {
-                    var calendarEl = document.getElementById('calendar');
-                    var calendar = new FullCalendar.Calendar(calendarEl, {
-                        initialView: localStorage.getItem('calendar') ?? 'dayGridMonth' ,
-                        locale: 'pt-br',
-                        headerToolbar: {
-                            start: 'today prev,next', // will normally be on the left. if RTL, will be on the right
-                            center: 'title',
-                            end: 'dayGridMonth,dayGridWeek,timeGridDay,listDay' // will normally be on the right. if RTL, will be on the left
-                        },
-                        eventTimeFormat: {
-                            hour: '2-digit',
-                            minute: '2-digit',
-                            meridiem: false
-                        },
-                        events: data.data.map(e => {
-                            return {
-                                title: e.Paciente ?? "Agenda Bloqueada",
-                                backgroundColor: 'transparent',
-                                className: e.Paciente ? null : "no-pacient",
-                                start: e.DataReuniao,
-                                extendedProps: {
-                                    id: e.Id,
-                                    etiquetas: e.Etiquetas
-                                },
+                    calendar.getEventSources()?.forEach(evt => evt.remove())
+                    calendar.addEventSource(data.data.map(e => {
+                        return {
+                            title: e.Paciente ?? "Agenda Bloqueada",
+                            backgroundColor: 'transparent',
+                            className: e.Paciente ? null : "no-pacient",
+                            start: e.DataReuniao,
+                            extendedProps: {
+                                id: e.Id,
+                                etiquetas: e.Etiquetas
+                            },
 
-                            }
-                        }),
-                        eventContent: function (arg) {
-                            let div = document.createElement('div')
-                            $(div).html(`<div style="display:flex;gap:5px;flex-wrap:wrap"><span>${moment(arg.event.start).format('HH:mm')}</span><span>${arg.event.title}</span></div> <div style="margin-top:5px;display:flex;gap:5px;flex-wrap:wrap">${arg.event.extendedProps.etiquetas.map(
-                                etiqueta => {
-                                    cor = $(`#reuniao-marcadores option[value=${etiqueta}]`).data('cor')
-                                    titulo = $(`#reuniao-marcadores option[value=${etiqueta}]`).text()
-                                    return `<span class="badge" style="background-color:${cor};color:#fff">${titulo}</span>`
-                                }).join().replace(/,/g, '')}</div>`)
-
-
-                            let arrayOfDomNodes = [div]
-                            return { domNodes: arrayOfDomNodes }
-                        },
-                        viewClassNames: function ({ view }) {
-                            localStorage.setItem('calendar', view.type)
-                        },
-                        eventClick: function (info) {
-                            EditReuniao(info.event._def.extendedProps.id)
-                        },
-
-                        dateClick: function (info) {
-                            EditReuniao(0, moment(info.dateStr).format('DD/MM/YYYY HH:mm'))
-                        },
-                    });
-                    calendar.render();
+                        }
+                    }))
+                    calendar.refetchEvents()
                 }
             })
         }
         $(document).ready(function () {
             carregarEtiquetas()
             GetParticipantes()
-            carregarConsultas()
+            loadCalendar()
             onChangePagamentos()
             changeArquivoConsulta()
         });
+
+        function loadCalendar() {
+            var calendarEl = document.getElementById('calendar');
+            calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: localStorage.getItem('calendar') ?? 'dayGridMonth',
+                locale: 'pt-br',
+                headerToolbar: {
+                    start: 'today prev,next', // will normally be on the left. if RTL, will be on the right
+                    center: 'title',
+                    end: 'dayGridMonth,dayGridWeek,timeGridDay,listDay' // will normally be on the right. if RTL, will be on the left
+                },
+                eventTimeFormat: {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    meridiem: false
+                },
+                eventContent: function (arg) {
+                    let div = document.createElement('div')
+                    $(div).html(`<div style="display:flex;gap:5px;flex-wrap:wrap"><span>${moment(arg.event.start).format('HH:mm')}</span><span>${arg.event.title}</span></div> <div style="margin-top:5px;display:flex;gap:5px;flex-wrap:wrap">${arg.event.extendedProps.etiquetas.map(
+                        etiqueta => {
+                            cor = $(`#reuniao-marcadores option[value=${etiqueta}]`).data('cor')
+                            titulo = $(`#reuniao-marcadores option[value=${etiqueta}]`).text()
+                            return `<span class="badge" style="background-color:${cor};color:#fff">${titulo}</span>`
+                        }).join().replace(/,/g, '')}</div>`)
+
+
+                    let arrayOfDomNodes = [div]
+                    return { domNodes: arrayOfDomNodes }
+                },
+                viewClassNames: function ({ view }) {
+                    localStorage.setItem('calendar', view.type)
+                    carregarConsultas()
+                },
+                datesSet: function () {
+                    carregarConsultas()
+                },
+                eventClick: function (info) {
+                    EditReuniao(info.event._def.extendedProps.id)
+                },
+
+                dateClick: function (info) {
+                    EditReuniao(0, moment(info.dateStr).format('DD/MM/YYYY HH:mm'))
+                },
+            });
+            calendar.render();
+        }
     </script>
 }

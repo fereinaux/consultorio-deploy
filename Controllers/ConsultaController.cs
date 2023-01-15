@@ -6,6 +6,7 @@ using Core.Business.Eventos;
 using Core.Business.Reunioes;
 using Core.Models.Reunioes;
 using SysIgreja.ViewModels;
+using System;
 using System.Globalization;
 using System.Linq;
 using System.Web.Mvc;
@@ -36,17 +37,16 @@ namespace SysIgreja.Controllers
         }
 
         [HttpGet]
-        public ActionResult GetReunioes(int EventoId)
+        public ActionResult GetReunioes(int EventoId,DateTime Start , DateTime End)
         {
             var result = reuniaosBusiness
                 .GetReunioes()
-                .Where(x => x.EventoId == EventoId)
+                .Where(x => x.EventoId == EventoId && x.DataReuniao >= Start && x.DataReuniao <= End)
                 .ToList()
                 .Select(x => new
                 {
                     Id = x.Id,
                     DataReuniao = x.DataReuniao.ToString("yyyy-MM-ddTHH:mm"),
-                    Pauta = x.Pauta,
                     PacienteId = x.ParticipanteId,
                     Paciente = x.Participante?.Nome,
                     Etiquetas = x.ConsultaEtiquetas.Select(y => y.Etiqueta.Id)
@@ -67,7 +67,6 @@ namespace SysIgreja.Controllers
                 {
                     Id = x.Id,
                     DataReuniao = x.DataReuniao.ToString("dd/MM/yyyy"),
-                    Pauta = x.Pauta,
                     PacienteId = x.ParticipanteId,
                     Paciente = x.Participante?.Nome
 

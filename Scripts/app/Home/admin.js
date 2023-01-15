@@ -1,4 +1,6 @@
-﻿+$(document).ready(() => {
+﻿let calendar
+
++$(document).ready(() => {
     $('#data-ini').val(moment().startOf('quarter').format('DD/MM/YYYY'))
     $('#data-fim').val(moment().endOf('quarter').format('DD/MM/YYYY'))
     $('#data-fim,#data-ini').change(GetResultadosAdmin)
@@ -7,7 +9,7 @@
     GetResultadosAdmin();
     GetParticipantes()
     onChangePagamentos()
-    carregarConsultas()
+    loadCalendar()
     changeArquivoConsulta()
     //GetResultadosGeral();
 });
@@ -27,66 +29,76 @@ function getEquipantesExcel() {
     });
 }
 
+function loadCalendar() {
+    var calendarEl = document.getElementById('calendar-consultas');
+    calendar = new FullCalendar.Calendar(calendarEl, {
+        customButtons: {
+            new: {
+                text: 'Nova consulta',
+                click: function () {
+                    EditReuniao(0)
+                }
+            }
+        },
+        initialView: 'listDay',
+        locale: 'pt-br',
+        headerToolbar: {
+            start: 'prev,next,today', // will normally be on the left. if RTL, will be on the right
+            center: 'title',
+            end: 'new' // will normally be on the right. if RTL, will be on the left
+        },
+        eventTimeFormat: {
+            hour: '2-digit',
+            minute: '2-digit',
+            meridiem: false
+        },
+        eventContent: function (arg) {
+            let div = document.createElement('div')
+
+            $(div).html(`${arg.event.title} <div> ${arg.event.extendedProps.etiquetas.map(
+                etiqueta => {
+                    cor = $(`#reuniao-marcadores option[value=${etiqueta}]`).data('cor')
+                    titulo = $(`#reuniao-marcadores option[value=${etiqueta}]`).text()
+                    return `<span class="badge m-r-xs" style="background-color:${cor};color:#fff">${titulo}</span>`
+                }).join().replace(/,/g, '')}`)
+
+
+            let arrayOfDomNodes = [div]
+            return { domNodes: arrayOfDomNodes }
+        },
+
+        datesSet: function () {
+            carregarConsultas()
+        },
+        eventClick: function (info) {
+            EditReuniao(info.event._def.extendedProps.id)
+        },
+    });
+    calendar.render();
+}
+
 function carregarConsultas() {
     $.ajax({
         url: '/Consulta/GetReunioes',
         datatype: "json",
-        data: { EventoId: $("#eventoid").val(), },
+        data: { EventoId: $("#eventoid").val(), Start: moment(calendar.view.activeStart, 'DD/MM/YYYY', 'pt-br').toJSON(), End: moment(calendar.view.activeEnd, 'DD/MM/YYYY', 'pt-br').toJSON() },
         type: "GET",
         success: (data) => {
-            var calendarEl = document.getElementById('calendar-consultas');
-            var calendar = new FullCalendar.Calendar(calendarEl, {
-                customButtons: {
-                    new: {
-                        text: 'Nova consulta',
-                        click: function () {
-                            EditReuniao(0)
-                        }
-                    }
-                },
-                initialView: 'listDay',
-                locale: 'pt-br',
-                headerToolbar: {
-                    start: 'prev,next,today', // will normally be on the left. if RTL, will be on the right
-                    center: 'title',
-                    end: 'new' // will normally be on the right. if RTL, will be on the left
-                },
-                eventTimeFormat: {
-                    hour: '2-digit',
-                    minute: '2-digit',
-                    meridiem: false
-                },
-                eventContent: function (arg) {
-                    let div = document.createElement('div')
+            calendar.getEventSources()?.forEach(evt => evt.remove())
+            calendar.addEventSource(data.data.map(e => {
+                return {
+                    title: e.Paciente ?? "Agenda Bloqueada",
+                    backgroundColor: 'transparent',
+                    className: e.Paciente ? null : "no-pacient",
+                    start: e.DataReuniao,
+                    extendedProps: {
+                        id: e.Id,
+                        etiquetas: e.Etiquetas
+                    },
 
-                    $(div).html(`${arg.event.title} <div> ${arg.event.extendedProps.etiquetas.map(
-                        etiqueta => {
-                            cor = $(`#reuniao-marcadores option[value=${etiqueta}]`).data('cor')
-                            titulo = $(`#reuniao-marcadores option[value=${etiqueta}]`).text()
-                            return `<span class="badge m-r-xs" style="background-color:${cor};color:#fff">${titulo}</span>`
-                        }).join().replace(/,/g, '')}`)
-
-
-                    let arrayOfDomNodes = [div]
-                    return { domNodes: arrayOfDomNodes }
-                },
-                events: data.data.map(e => {
-                    return {
-                        title: e.Paciente ?? "Agenda Bloqueada",
-                        start: e.DataReuniao,
-                        backgroundColor: 'transparent',
-                        className: e.Paciente ? null : "no-pacient",
-                        extendedProps: {
-                            id: e.Id,
-                            etiquetas: e.Etiquetas
-                        },
-                    }
-                }),
-                eventClick: function (info) {
-                    EditReuniao(info.event._def.extendedProps.id)
-                },
-            });
-            calendar.render();
+                }
+            }))
+            calendar.refetchEvents()
         }
     })
 }
@@ -279,7 +291,7 @@ function GetResultadosAdmin() {
                                     }
                                 }
                             },
-                         
+
                         },
                         responsive: true,
                         plugins: {
@@ -298,7 +310,7 @@ function GetResultadosAdmin() {
                                             label += ': ';
                                         }
                                         if (context.parsed.y !== null) {
-                                            label +=`R$ ${context.parsed.y.toLocaleString('pt-br', { minimumFractionDigits: 2 })}`;
+                                            label += `R$ ${context.parsed.y.toLocaleString('pt-br', { minimumFractionDigits: 2 })}`;
                                         }
                                         return label;
                                     }
@@ -313,14 +325,14 @@ function GetResultadosAdmin() {
                                 label: 'Receber',
                                 backgroundColor: "#1ebd7b70",
                                 borderColor: "#1ebd7b",
-                                data: months.map(mes => result.Financeiro.filter(x => x.Tipo == "Receber" && x.Mes == moment(mes, "MMM YYYYY").locale('pt-br').month() + 1)).map(valorMes => valorMes.reduce((a, b) => ({ Valor: a.Valor + b.Valor }), { Valor: 0 })).map(valor =>  valor.Valor)
-                            },   
+                                data: months.map(mes => result.Financeiro.filter(x => x.Tipo == "Receber" && x.Mes == moment(mes, "MMM YYYYY").locale('pt-br').month() + 1)).map(valorMes => valorMes.reduce((a, b) => ({ Valor: a.Valor + b.Valor }), { Valor: 0 })).map(valor => valor.Valor)
+                            },
                             {
                                 label: 'Pagar',
                                 backgroundColor: "#d5343487",
                                 borderColor: "#d53434",
                                 data: months.map(mes => result.Financeiro.filter(x => x.Tipo == "Pagar" && x.Mes == moment(mes, "MMM YYYYY").locale('pt-br').month() + 1)).map(valorMes => valorMes.reduce((a, b) => ({ Valor: a.Valor + b.Valor }), { Valor: 0 })).map(valor => valor.Valor)
-                            },  
+                            },
                         ]
                     }
                 }
