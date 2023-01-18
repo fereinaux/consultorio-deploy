@@ -27,7 +27,7 @@ namespace SysIgreja.Controllers
         public ActionResult Index()
         {
             ViewBag.Title = "Marcadores";
-            GetConfiguracoes();
+            GetConfiguracoes(new string[] { "Financeiro", "Admin", "Geral", "Administrativo" });
             return View();
         }
 
