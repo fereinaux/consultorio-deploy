@@ -77,7 +77,7 @@ namespace SysIgreja.Controllers
         public ActionResult Index()
         {
             ViewBag.Title = "Pacientes";
-            GetEventos(new string[] { "Admin", "Geral",  });
+            GetEventos();
             GetConfiguracao();
 
             return View();
