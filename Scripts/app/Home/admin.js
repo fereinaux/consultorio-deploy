@@ -54,13 +54,12 @@ function loadCalendar() {
         },
         eventContent: function (arg) {
             let div = document.createElement('div')
-
-            $(div).html(`${arg.event.title} <div> ${arg.event.extendedProps.etiquetas.map(
+            $(div).html(`<div class="container-event" data-cor="${arg.event.extendedProps.cor ?? ""}" style="display:flex;gap:5px;flex-wrap:wrap"><span>${moment(arg.event.start).format('HH:mm')}</span><span>${arg.event.title}</span></div> <div style="margin-top:5px;display:flex;gap:5px;flex-wrap:wrap">${arg.event.extendedProps.etiquetas.map(
                 etiqueta => {
                     cor = $(`#reuniao-marcadores option[value=${etiqueta}]`).data('cor')
                     titulo = $(`#reuniao-marcadores option[value=${etiqueta}]`).text()
-                    return `<span class="badge m-r-xs" style="background-color:${cor};color:#fff">${titulo}</span>`
-                }).join().replace(/,/g, '')}`)
+                    return `<span class="badge" style="background-color:${cor};color:#fff">${titulo}</span>`
+                }).join().replace(/,/g, '')}</div>`)
 
 
             let arrayOfDomNodes = [div]
@@ -87,18 +86,23 @@ function carregarConsultas() {
             calendar.getEventSources()?.forEach(evt => evt.remove())
             calendar.addEventSource(data.data.map(e => {
                 return {
-                    title: e.Paciente ?? "Agenda Bloqueada",
-                    backgroundColor: 'transparent',
-                    className: e.Paciente ? null : "no-pacient",
+                    title: e.Paciente ?? (e.Etiquetas.length == 1 ? $(`#reuniao-marcadores option[value=${e.Etiquetas[0]}]`).text() : "Agenda Bloqueada"),
+                    backgroundColor: e.Paciente ? 'transparent' : (e.Etiquetas.length > 1 ? 'transparent' : $(`#reuniao-marcadores option[value=${e.Etiquetas[0]}]`).data('cor')),
+                    className: e.Paciente ? null : `${e.Etiquetas.length == 1 ? "bg-etiqueta" : "no-pacient"}`,
                     start: e.DataReuniao,
                     extendedProps: {
                         id: e.Id,
-                        etiquetas: e.Etiquetas
+                        etiquetas: e.Paciente ? e.Etiquetas : (e.Etiquetas.length > 1 ? e.Etiquetas : []),
+                        cor: e.Paciente ? e.Etiquetas : (e.Etiquetas.length == 1 ? $(`#reuniao-marcadores option[value=${e.Etiquetas[0]}]`).data('cor') : null),
                     },
 
                 }
             }))
             calendar.refetchEvents()
+            $('.bg-etiqueta').each((index, etiqueta) => {
+                var container = $(etiqueta).find('.container-event')
+                $(etiqueta).attr('style', `background-color: ${container.data('cor')} !important`);
+            }) 
         }
     })
 }

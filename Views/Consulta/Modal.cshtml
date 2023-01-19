@@ -121,15 +121,17 @@
         color: white !important;
     }
 
-    .fc .fc-list-event:hover td, .fc .fc-list-event:hover a {
-        background-color: #095a4a !important;
+    .fc-list-event-time, .fc-list-event-graphic {
+        display: none
     }
 
-    .fc .fc-list-event.no-pacient:hover td, .fc .fc-list-event.no-pacient:hover a {
-        background-color: #a1460b !important;
-        /* background color */
-        border-color: #a1460b !important;
+    .fc .fc-list-event:hover td, .fc .fc-list-event {
+        pointer-events: none;
     }
+
+        .fc .fc-list-event.no-pacient td, .fc .fc-list-event.no-pacient {
+            pointer-events: none;
+        }
 
     .fc-timegrid-event-harness-inset .fc-timegrid-event {
         height: fit-content;
